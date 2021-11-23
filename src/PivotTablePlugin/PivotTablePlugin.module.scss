@@ -1,0 +1,23 @@
+.tableContainer{
+  overflow: auto;
+}
+
+.button {
+  display: block;
+}
+
+.topToolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: 5px;
+}
+
+.topToolbar > * {
+  margin-right: 5px;
+}
+
+.editModeRoot {
+  display: flex;
+  flex-direction: row;
+}
