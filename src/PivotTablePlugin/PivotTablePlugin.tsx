@@ -74,28 +74,6 @@ export class PivotTablePlugin implements ISectionPlugin {
       tableData.push(values);
     }
     return <PivotTableComponent data={tableData}/>
-    // return (
-    //   <Observer>
-    //     {() =>
-    //       true
-    //       ? <div className={S.tableContainer}>
-    //         <PivotTableUI
-    //           data={tableData}
-    //           onChange={tableState => this.onTableChange(tableState)}
-    //           renderers={Object.assign({}, TableRenderers, PlotlyRenderers)}
-    //           {...this.tableState}
-    //         />
-    //       </div>
-    //       : <div>
-    //           <PivotTable
-    //             data={tableData}
-    //             renderers={Object.assign({}, TableRenderers, PlotlyRenderers)}
-    //             {...this.tableState}
-    //           />
-    //       </div>
-    //     }
-    //   </Observer>
-    // );
   }
 
   getScreenParameters: (() => { [parameter: string]: string }) | undefined;
