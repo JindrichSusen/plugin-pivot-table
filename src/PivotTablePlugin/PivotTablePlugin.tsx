@@ -105,7 +105,7 @@ export class PivotTablePlugin implements ISectionPlugin {
 export class PivotTableComponent extends React.Component<{
   data:string[][]
 }> {
-  tableViewNameTemplate = "New Table View";
+  readonly tableViewNameTemplate = "New Table View";
 
   @observable
   views: TableView[] = [];
@@ -131,21 +131,20 @@ export class PivotTableComponent extends React.Component<{
   }
 
   deleteCurrentTableView(){
-    const currentViewIndex = this.views.indexOf(this.currentView);
-    const previousViewIndex = currentViewIndex - 1;
-    const nextViewIndex = currentViewIndex + 1;
+    debugger;
+    let newViewIndex = this.views.indexOf(this.currentView);
 
     this.deleteTableView(this.currentView);
 
-    if(previousViewIndex > -1){
-      this.currentView = this.views[previousViewIndex];
+    if(newViewIndex > this.views.length - 1){
+      newViewIndex = this.views.length - 1;
     }
-    else if (nextViewIndex < this.views.length - 1){
-      this.currentView = this.views[previousViewIndex];
+    if(newViewIndex < 0){
+      this.currentView = this.createTableView();
     }
     else
     {
-      this.currentView = this.createTableView();
+      this.currentView = this.views[newViewIndex];
     }
     this.showEditMode = false
   }
@@ -181,7 +180,7 @@ export class PivotTableComponent extends React.Component<{
             onClick={()=> this.showEditMode = false }/>
           <Button
             className={S.button}
-            label={"Delete"}
+            label={this.views.length === 1 && this.currentView.name === this.tableViewNameTemplate ? "Clear" : "Delete"}
             onClick={()=> this.deleteCurrentTableView() }/>
         </div>
         <PivotTableUI
