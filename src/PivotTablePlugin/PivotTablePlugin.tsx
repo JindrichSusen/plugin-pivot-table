@@ -107,7 +107,7 @@ export class PivotTableComponent extends React.Component<{
   }
 
   getPersistedConfig() {
-    const configStr = (this.props.dataView as any).getConfiguration("PivotTablePlugin");
+    const configStr = this.props.dataView.getConfiguration("PivotTablePlugin");
     if (!configStr) {
       return undefined;
     }
@@ -131,7 +131,7 @@ export class PivotTableComponent extends React.Component<{
     throw new Error("Could not create new TableView")
   }
 
-  deleteCurrentTableView() {
+  async deleteCurrentTableView() {
     let newViewIndex = this.views.indexOf(this.currentView);
 
     this.deleteTableView(this.currentView);
@@ -145,7 +145,7 @@ export class PivotTableComponent extends React.Component<{
       this.currentView = this.views[newViewIndex];
     }
     this.showEditMode = false
-    this.onSave();
+    await this.onSave();
   }
 
   deleteTableView(tableView: TableView) {
@@ -155,9 +155,9 @@ export class PivotTableComponent extends React.Component<{
     }
   }
 
-  newTableView() {
+  async newTableView() {
     this.currentView = this.createTableView();
-    this.onSave();
+    await this.onSave();
   }
 
   @action
@@ -166,10 +166,10 @@ export class PivotTableComponent extends React.Component<{
     this.currentView.tableState = tableState;
   }
 
-  onSave() {
+  async onSave() {
     this.currentView.updatePersistedState();
     let json = JSON.stringify(this.views.map(view => view.persistedState));
-    (this.props.dataView as any).saveConfiguration("PivotTablePlugin", json);
+    await this.props.dataView.saveConfiguration("PivotTablePlugin", json);
     this.showEditMode = false;
   }
 
@@ -191,7 +191,7 @@ export class PivotTableComponent extends React.Component<{
         <Button
           className={S.button}
           label={"Save"}
-          onClick={() => this.onSave()}/>
+          onClick={async () => await this.onSave()}/>
         <Button
           className={S.button}
           label={"Cancel"}
@@ -199,7 +199,7 @@ export class PivotTableComponent extends React.Component<{
         <Button
           className={S.button}
           label={this.views.length === 1 && this.currentView.name === this.tableViewNameTemplate ? "Clear" : "Delete"}
-          onClick={() => this.deleteCurrentTableView()}/>
+          onClick={async () => await this.deleteCurrentTableView()}/>
       </div>
       <PivotTableUI
         data={this.props.data}
@@ -216,7 +216,7 @@ export class PivotTableComponent extends React.Component<{
         <div className={S.topToolbar}>
           <Button
             label={"New"}
-            onClick={() => this.newTableView()}/>
+            onClick={async () => await this.newTableView()}/>
           <Button
             label={"Edit"}
             onClick={() => this.onEdit()}/>

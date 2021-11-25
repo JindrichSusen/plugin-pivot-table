@@ -64,10 +64,10 @@
   resolved "https://registry.yarnpkg.com/@origam/components/-/components-1.1.1.tgz#98a60aa8acc50de9f71792df55549ff84cac84e7"
   integrity sha512-Q4BtBD11SZlmgZj/JD1xwaun3po/FlUG4betpXxAjiOOfjGIPiieTqXez52PPfDDHHlVumiqF/pe0j78J3wcOA==
 
-"@origam/plugin-interfaces@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@origam/plugin-interfaces/-/plugin-interfaces-1.0.0.tgz#f393a21243051559eacc6793dc77c2e43bcfb07a"
-  integrity sha512-ttaWDJr4Xc5MiKCpsP/8gMBoiVr+1ptCb9dMRAejZaTB7OweDtxKD85Fk1GMHoI3onm4pC0kEAM7pl8t+7fidg==
+"@origam/plugin-interfaces@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@origam/plugin-interfaces/-/plugin-interfaces-1.1.1.tgz#521e565d149410a1e59a02cd2b197ec0671e9240"
+  integrity sha512-8iyPPcWc2ZIlUlulGO76IzI+MZH87PT20GRwH8Rsw3eBbPSJeTSY9neN3ynPyBXqhOBopCty1fHNEBkC8tTnCg==
 
 "@origam/styles@^1.0.0":
   version "1.0.0"
