@@ -18,7 +18,7 @@ along with ORIGAM. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import { action, observable } from "mobx";
+import { action, observable, toJS } from "mobx";
 import React from "react";
 import PivotTableUI from 'react-pivottable/PivotTableUI';
 import PivotTable from 'react-pivottable/PivotTable';
@@ -39,6 +39,7 @@ import Plot from 'react-plotly.js';
 import createPlotlyRenderers from 'react-pivottable/PlotlyRenderers';
 import { Button } from "@origam/components";
 import { IListViewItem, SimpleListView } from "./SimpleListView";
+import { v4 as uuidv4 } from 'uuid';
 
 const PlotlyRenderers = createPlotlyRenderers(Plot);
 
@@ -73,7 +74,7 @@ export class PivotTablePlugin implements ISectionPlugin {
       const values = this.getPropertyValues(dataView, row, dataView.properties);
       tableData.push(values);
     }
-    return <PivotTableComponent data={tableData}/>
+    return <PivotTableComponent data={tableData} dataView={data.dataView}/>
   }
 
   getScreenParameters: (() => { [parameter: string]: string }) | undefined;
@@ -81,7 +82,8 @@ export class PivotTablePlugin implements ISectionPlugin {
 
 @observer
 export class PivotTableComponent extends React.Component<{
-  data:string[][]
+  data:string[][],
+  dataView: IPluginDataView
 }> {
   readonly tableViewNameTemplate = "New Table View";
 
@@ -89,10 +91,34 @@ export class PivotTableComponent extends React.Component<{
   views: TableView[] = [];
 
   @observable
-  currentView = this.createTableView();
+  currentView: TableView;
 
   @observable
-  showEditMode = true;
+  showEditMode = false;
+
+  constructor(props: any) {
+    super(props);
+    const config = this.getPersistedConfig();
+    if(!config){
+      this.currentView = this.createTableView();
+    }
+    else
+    {
+      this.views = config.map(viewConfig => new TableView(viewConfig.name, uuidv4(), viewConfig.tableState));
+      this.currentView = this.views[0];
+    }
+  }
+
+  getPersistedConfig() {
+    const configStr = (this.props.dataView as any).getConfiguration("PivotTablePlugin");
+    if(!configStr){
+      return undefined;
+    }
+    const config = JSON.parse(configStr) as IPersistAbleState[];
+    return config.length === 0
+      ? undefined
+      : config;
+  }
 
   createTableView(){
     let newName = this.tableViewNameTemplate;
@@ -100,7 +126,7 @@ export class PivotTableComponent extends React.Component<{
       if(this.views.map(view => view.name).includes(newName)){
         newName = `${this.tableViewNameTemplate} (${i})`;
       } else{
-        let tableView = new TableView(newName);
+        let tableView = new TableView(newName, uuidv4(), {});
         this.views.push(tableView);
         return tableView;
       }
@@ -109,7 +135,6 @@ export class PivotTableComponent extends React.Component<{
   }
 
   deleteCurrentTableView(){
-    debugger;
     let newViewIndex = this.views.indexOf(this.currentView);
 
     this.deleteTableView(this.currentView);
@@ -125,6 +150,7 @@ export class PivotTableComponent extends React.Component<{
       this.currentView = this.views[newViewIndex];
     }
     this.showEditMode = false
+    this.onSave();
   }
 
   deleteTableView(tableView: TableView){
@@ -136,6 +162,7 @@ export class PivotTableComponent extends React.Component<{
 
   newTableView(){
     this.currentView = this.createTableView();
+    this.onSave();
   }
 
   @action
@@ -144,6 +171,20 @@ export class PivotTableComponent extends React.Component<{
     this.currentView.tableState = tableState;
   }
 
+  onSave(){
+    this.currentView.updatePersistedState();
+    let json = JSON.stringify(this.views.map(view => view.persistedState));
+    (this.props.dataView as any).saveConfiguration("PivotTablePlugin", json);
+    this.showEditMode = false;
+  }
+
+  onCancel(){
+    this.showEditMode = false;
+  }
+
+  onEdit(){
+    this.showEditMode = true;
+  }
 
   renderEditMode(){
     return <div className={S.tableContainer}>
@@ -155,11 +196,15 @@ export class PivotTableComponent extends React.Component<{
           <Button
             className={S.button}
             label={"Save"}
-            onClick={()=> this.showEditMode = false }/>
+            onClick={()=> this.onSave()}/>
+          <Button
+            className={S.button}
+            label={"Cancel"}
+            onClick={()=> this.onCancel()}/>
           <Button
             className={S.button}
             label={this.views.length === 1 && this.currentView.name === this.tableViewNameTemplate ? "Clear" : "Delete"}
-            onClick={()=> this.deleteCurrentTableView() }/>
+            onClick={()=> this.deleteCurrentTableView()}/>
         </div>
         <PivotTableUI
           data={this.props.data}
@@ -179,7 +224,7 @@ export class PivotTableComponent extends React.Component<{
             onClick={()=> this.newTableView()}/>
           <Button
             label={"Edit"}
-            onClick={()=> this.showEditMode = true}/>
+            onClick={()=> this.onEdit()}/>
         </div>
         <SimpleListView
           items={this.views}
@@ -206,17 +251,48 @@ export class PivotTableComponent extends React.Component<{
 }
 
 class TableView implements IListViewItem{
-   constructor(name: string) {
-    this.name = name;
-  }
-
   @observable
   name = ""
 
-  get id(){
-     return this.name;
+  persistedState: IPersistAbleState;
+
+  constructor(name: string, public id: string, state: ITableState) {
+    this.name = name;
+    this.tableState = state;
+    this.persistedState = {
+       name: this.name,
+       tableState: state
+     };
+  }
+
+  private toPersistAbleState(){
+     return {
+       name: this.name,
+       tableState: {
+         aggregatorName: this.tableState.aggregatorName,
+         colOrder: toJS(this.tableState.colOrder),
+         cols: toJS(this.tableState.cols),
+         rendererName: this.tableState.rendererName,
+         rowOrder: toJS(this.tableState.rowOrder),
+         rows: toJS(this.tableState.rows),
+         vals: toJS(this.tableState.vals),
+       }
+     }
+  }
+
+  updatePersistedState() {
+     this.persistedState = this.toPersistAbleState();
   }
 
   @observable
-  tableState = [];
+  tableState: ITableState = {};
+}
+
+interface IPersistAbleState {
+  name: string;
+  tableState: ITableState;
+}
+
+interface ITableState {
+  [key: string]: string | string[] | ITableState;
 }
