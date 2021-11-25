@@ -33,7 +33,8 @@ import {
   ISectionPlugin
 } from "@origam/plugin-interfaces";
 import { observer } from "mobx-react";
-import S from "./PivotTablePlugin.module.scss"
+import "./PivotTablePlugin.module.scss";
+import S from "./PivotTablePlugin.module.scss";
 import TableRenderers from 'react-pivottable/TableRenderers';
 import Plot from 'react-plotly.js';
 import createPlotlyRenderers from 'react-pivottable/PlotlyRenderers';
