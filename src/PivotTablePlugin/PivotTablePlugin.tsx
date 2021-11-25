@@ -65,7 +65,6 @@ export class PivotTablePlugin implements ISectionPlugin {
     return dataView.properties.map(prop => dataView.getCellText(row, prop.id));
   }
 
-
   getComponent(data: IPluginData, createLocalizer: (localizations: ILocalization[]) => ILocalizer): JSX.Element {
 
     let dataView = data.dataView;
@@ -82,7 +81,7 @@ export class PivotTablePlugin implements ISectionPlugin {
 
 @observer
 export class PivotTableComponent extends React.Component<{
-  data:string[][],
+  data: string[][],
   dataView: IPluginDataView
 }> {
   readonly tableViewNameTemplate = "New Table View";
@@ -99,11 +98,9 @@ export class PivotTableComponent extends React.Component<{
   constructor(props: any) {
     super(props);
     const config = this.getPersistedConfig();
-    if(!config){
+    if (!config) {
       this.currentView = this.createTableView();
-    }
-    else
-    {
+    } else {
       this.views = config.map(viewConfig => new TableView(viewConfig.name, uuidv4(), viewConfig.tableState));
       this.currentView = this.views[0];
     }
@@ -111,7 +108,7 @@ export class PivotTableComponent extends React.Component<{
 
   getPersistedConfig() {
     const configStr = (this.props.dataView as any).getConfiguration("PivotTablePlugin");
-    if(!configStr){
+    if (!configStr) {
       return undefined;
     }
     const config = JSON.parse(configStr) as IPersistAbleState[];
@@ -120,12 +117,12 @@ export class PivotTableComponent extends React.Component<{
       : config;
   }
 
-  createTableView(){
+  createTableView() {
     let newName = this.tableViewNameTemplate;
     for (let i = 0; i < 1000; i++) {
-      if(this.views.map(view => view.name).includes(newName)){
+      if (this.views.map(view => view.name).includes(newName)) {
         newName = `${this.tableViewNameTemplate} (${i})`;
-      } else{
+      } else {
         let tableView = new TableView(newName, uuidv4(), {});
         this.views.push(tableView);
         return tableView;
@@ -134,33 +131,31 @@ export class PivotTableComponent extends React.Component<{
     throw new Error("Could not create new TableView")
   }
 
-  deleteCurrentTableView(){
+  deleteCurrentTableView() {
     let newViewIndex = this.views.indexOf(this.currentView);
 
     this.deleteTableView(this.currentView);
 
-    if(newViewIndex > this.views.length - 1){
+    if (newViewIndex > this.views.length - 1) {
       newViewIndex = this.views.length - 1;
     }
-    if(newViewIndex < 0){
+    if (newViewIndex < 0) {
       this.currentView = this.createTableView();
-    }
-    else
-    {
+    } else {
       this.currentView = this.views[newViewIndex];
     }
     this.showEditMode = false
     this.onSave();
   }
 
-  deleteTableView(tableView: TableView){
+  deleteTableView(tableView: TableView) {
     const index = this.views.indexOf(tableView);
     if (index > -1) {
       this.views.splice(index, 1);
     }
   }
 
-  newTableView(){
+  newTableView() {
     this.currentView = this.createTableView();
     this.onSave();
   }
@@ -171,60 +166,60 @@ export class PivotTableComponent extends React.Component<{
     this.currentView.tableState = tableState;
   }
 
-  onSave(){
+  onSave() {
     this.currentView.updatePersistedState();
     let json = JSON.stringify(this.views.map(view => view.persistedState));
     (this.props.dataView as any).saveConfiguration("PivotTablePlugin", json);
     this.showEditMode = false;
   }
 
-  onCancel(){
+  onCancel() {
     this.showEditMode = false;
   }
 
-  onEdit(){
+  onEdit() {
     this.showEditMode = true;
   }
 
-  renderEditMode(){
+  renderEditMode() {
     return <div className={S.tableContainer}>
-        <div className={S.topToolbar}>
-          <div>{"View Name:"}</div>
-          <input
-            value={this.currentView.name}
-            onChange={event => this.currentView.name = event.target.value}/>
-          <Button
-            className={S.button}
-            label={"Save"}
-            onClick={()=> this.onSave()}/>
-          <Button
-            className={S.button}
-            label={"Cancel"}
-            onClick={()=> this.onCancel()}/>
-          <Button
-            className={S.button}
-            label={this.views.length === 1 && this.currentView.name === this.tableViewNameTemplate ? "Clear" : "Delete"}
-            onClick={()=> this.deleteCurrentTableView()}/>
-        </div>
-        <PivotTableUI
-          data={this.props.data}
-          onChange={tableState => this.onTableChange(tableState)}
-          renderers={Object.assign({}, TableRenderers, PlotlyRenderers)}
-          {...this.currentView.tableState}
-        />
+      <div className={S.topToolbar}>
+        <div>{"View Name:"}</div>
+        <input
+          value={this.currentView.name}
+          onChange={event => this.currentView.name = event.target.value}/>
+        <Button
+          className={S.button}
+          label={"Save"}
+          onClick={() => this.onSave()}/>
+        <Button
+          className={S.button}
+          label={"Cancel"}
+          onClick={() => this.onCancel()}/>
+        <Button
+          className={S.button}
+          label={this.views.length === 1 && this.currentView.name === this.tableViewNameTemplate ? "Clear" : "Delete"}
+          onClick={() => this.deleteCurrentTableView()}/>
       </div>
+      <PivotTableUI
+        data={this.props.data}
+        onChange={tableState => this.onTableChange(tableState)}
+        renderers={Object.assign({}, TableRenderers, PlotlyRenderers)}
+        {...this.currentView.tableState}
+      />
+    </div>
   }
 
-  renderDisplayMode(){
+  renderDisplayMode() {
     return <div className={S.editModeRoot}>
       <div>
         <div className={S.topToolbar}>
           <Button
             label={"New"}
-            onClick={()=> this.newTableView()}/>
+            onClick={() => this.newTableView()}/>
           <Button
             label={"Edit"}
-            onClick={()=> this.onEdit()}/>
+            onClick={() => this.onEdit()}/>
         </div>
         <SimpleListView
           items={this.views}
@@ -241,8 +236,8 @@ export class PivotTableComponent extends React.Component<{
     </div>
   }
 
-  render(){
-    return(
+  render() {
+    return (
       this.showEditMode
         ? this.renderEditMode()
         : this.renderDisplayMode()
@@ -250,7 +245,7 @@ export class PivotTableComponent extends React.Component<{
   }
 }
 
-class TableView implements IListViewItem{
+class TableView implements IListViewItem {
   @observable
   name = ""
 
@@ -260,28 +255,28 @@ class TableView implements IListViewItem{
     this.name = name;
     this.tableState = state;
     this.persistedState = {
-       name: this.name,
-       tableState: state
-     };
+      name: this.name,
+      tableState: state
+    };
   }
 
-  private toPersistAbleState(){
-     return {
-       name: this.name,
-       tableState: {
-         aggregatorName: this.tableState.aggregatorName,
-         colOrder: toJS(this.tableState.colOrder),
-         cols: toJS(this.tableState.cols),
-         rendererName: this.tableState.rendererName,
-         rowOrder: toJS(this.tableState.rowOrder),
-         rows: toJS(this.tableState.rows),
-         vals: toJS(this.tableState.vals),
-       }
-     }
+  private toPersistAbleState() {
+    return {
+      name: this.name,
+      tableState: {
+        aggregatorName: this.tableState.aggregatorName,
+        colOrder: toJS(this.tableState.colOrder),
+        cols: toJS(this.tableState.cols),
+        rendererName: this.tableState.rendererName,
+        rowOrder: toJS(this.tableState.rowOrder),
+        rows: toJS(this.tableState.rows),
+        vals: toJS(this.tableState.vals),
+      }
+    }
   }
 
   updatePersistedState() {
-     this.persistedState = this.toPersistAbleState();
+    this.persistedState = this.toPersistAbleState();
   }
 
   @observable
