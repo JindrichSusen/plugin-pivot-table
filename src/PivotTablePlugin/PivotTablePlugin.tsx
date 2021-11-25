@@ -164,6 +164,7 @@ export class PivotTableComponent extends React.Component<{
     yield this.onSave();
   }
 
+  @action
   deleteTableView(tableView: TableView) {
     const index = this.views.indexOf(tableView);
     if (index > -1) {
@@ -171,9 +172,11 @@ export class PivotTableComponent extends React.Component<{
     }
   }
 
+  @action
   async newTableView() {
     this.currentView = this.createTableView();
     await this.onSave();
+    this.showEditMode = true;
   }
 
   @action
@@ -182,6 +185,7 @@ export class PivotTableComponent extends React.Component<{
     this.currentView.tableState = tableState;
   }
 
+  @action
   async onSave() {
     this.currentView.updatePersistedState();
     let json = JSON.stringify(this.views.map(view => view.persistedState));
@@ -189,11 +193,13 @@ export class PivotTableComponent extends React.Component<{
     this.showEditMode = false;
   }
 
+  @action
   onCancel() {
     this.currentView.restoreToSavedState();
     this.showEditMode = false;
   }
 
+  @action
   onEdit() {
     this.showEditMode = true;
   }
