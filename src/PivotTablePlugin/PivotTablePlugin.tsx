@@ -73,7 +73,10 @@ export class PivotTablePlugin implements ISectionPlugin {
       const values = this.getPropertyValues(dataView, row, dataView.properties);
       tableData.push(values);
     }
-    return <PivotTableComponent data={tableData} dataView={data.dataView}/>
+    return <PivotTableComponent
+      data={tableData}
+      pluginData={data}
+    />
   }
 
   getScreenParameters: (() => { [parameter: string]: string }) | undefined;
@@ -82,9 +85,11 @@ export class PivotTablePlugin implements ISectionPlugin {
 @observer
 export class PivotTableComponent extends React.Component<{
   data: string[][],
-  dataView: IPluginDataView
+  pluginData: IPluginData
 }> {
   readonly tableViewNameTemplate = "New Table View";
+
+  dataView: IPluginDataView;
 
   @observable
   views: TableView[] = [];
@@ -97,6 +102,7 @@ export class PivotTableComponent extends React.Component<{
 
   constructor(props: any) {
     super(props);
+    this.dataView = this.props.pluginData.dataView;
     const config = this.getPersistedConfig();
     if (!config) {
       this.currentView = this.createTableView();
@@ -107,7 +113,7 @@ export class PivotTableComponent extends React.Component<{
   }
 
   getPersistedConfig() {
-    const configStr = this.props.dataView.getConfiguration("PivotTablePlugin");
+    const configStr = this.dataView.getConfiguration("PivotTablePlugin");
     if (!configStr) {
       return undefined;
     }
@@ -131,7 +137,17 @@ export class PivotTableComponent extends React.Component<{
     throw new Error("Could not create new TableView")
   }
 
-  async deleteCurrentTableView() {
+  *deleteCurrentTableView() {
+
+    const reallyDelete = (yield this.props.pluginData.guiHelper.askYesNoQuestion(
+      "Delete view",
+      "Do you really want to delete this view?")
+    ) as boolean;
+
+    if(! reallyDelete){
+      return;
+    }
+
     let newViewIndex = this.views.indexOf(this.currentView);
 
     this.deleteTableView(this.currentView);
@@ -145,7 +161,7 @@ export class PivotTableComponent extends React.Component<{
       this.currentView = this.views[newViewIndex];
     }
     this.showEditMode = false
-    await this.onSave();
+    yield this.onSave();
   }
 
   deleteTableView(tableView: TableView) {
@@ -169,7 +185,7 @@ export class PivotTableComponent extends React.Component<{
   async onSave() {
     this.currentView.updatePersistedState();
     let json = JSON.stringify(this.views.map(view => view.persistedState));
-    await this.props.dataView.saveConfiguration("PivotTablePlugin", json);
+    await this.dataView.saveConfiguration("PivotTablePlugin", json);
     this.showEditMode = false;
   }
 
@@ -200,7 +216,7 @@ export class PivotTableComponent extends React.Component<{
         <Button
           className={S.button}
           label={this.views.length === 1 && this.currentView.name === this.tableViewNameTemplate ? "Clear" : "Delete"}
-          onClick={async () => await this.deleteCurrentTableView()}/>
+          onClick={async () => await (this.props.pluginData as any).guiHelper.runGeneratorInFlowWithHandler(this.deleteCurrentTableView())}/>
       </div>
       <PivotTableUI
         data={this.props.data}

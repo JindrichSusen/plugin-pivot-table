@@ -59,15 +59,17 @@
   resolved "https://registry.yarnpkg.com/@mapbox/whoots-js/-/whoots-js-3.1.0.tgz#497c67a1cef50d1a2459ba60f315e448d2ad87fe"
   integrity sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==
 
-"@origam/components@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@origam/components/-/components-1.1.1.tgz#98a60aa8acc50de9f71792df55549ff84cac84e7"
-  integrity sha512-Q4BtBD11SZlmgZj/JD1xwaun3po/FlUG4betpXxAjiOOfjGIPiieTqXez52PPfDDHHlVumiqF/pe0j78J3wcOA==
+"@origam/components@^1.2.2":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@origam/components/-/components-1.2.3.tgz#61f5c835012fa088b42cb12276cf93c655e409a6"
+  integrity sha512-voJapGy51qigsDBGKO3yHXntNdobnwDX6YSF5t+eOmYAuTtd8456ToOnSmpxEb+mZFaNIx80cov1y1gdCe0Djg==
+  dependencies:
+    react-inlinesvg "^2.3.0"
 
-"@origam/plugin-interfaces@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@origam/plugin-interfaces/-/plugin-interfaces-1.1.1.tgz#521e565d149410a1e59a02cd2b197ec0671e9240"
-  integrity sha512-8iyPPcWc2ZIlUlulGO76IzI+MZH87PT20GRwH8Rsw3eBbPSJeTSY9neN3ynPyBXqhOBopCty1fHNEBkC8tTnCg==
+"@origam/plugin-interfaces@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@origam/plugin-interfaces/-/plugin-interfaces-1.2.0.tgz#990e216034e84a05950c2323288ea6bdd0267aea"
+  integrity sha512-ZHaWRskYiVtl3ngyLGNxgS+LWbvqXd9MbEIhbpIsp1XKuoP0G9j7Fns12SRNLBwiCRaYlzKw8gbqrWVTQU3gog==
 
 "@origam/styles@^1.0.0":
   version "1.0.0"
@@ -1480,6 +1482,11 @@ events@^3.2.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/events/-/events-3.3.0.tgz#31a95ad0a924e2d2c419a813aeb2c4e878ea7400"
   integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
+
+exenv@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/exenv/-/exenv-1.2.2.tgz#2ae78e85d9894158670b03d47bec1f03bd91bb9d"
+  integrity sha1-KueOhdmJQVhnCwPUe+wfA72Ru50=
 
 ext@^1.1.2:
   version "1.6.0"
@@ -3456,6 +3463,19 @@ react-draggable@^3.0.3:
   dependencies:
     classnames "^2.2.5"
     prop-types "^15.6.0"
+
+react-from-dom@^0.6.0:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/react-from-dom/-/react-from-dom-0.6.1.tgz#6740f5a3d79e0c354703e5c096b8fdfe0db71b0f"
+  integrity sha512-7aAZx7LhRnmR51W5XtmTBYHGFl2n1AdEk1uoXLuzHa1OoGXrxOW/iwLcudvgp6BGX/l4Yh1rtMrIzvhlvbVddg==
+
+react-inlinesvg@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/react-inlinesvg/-/react-inlinesvg-2.3.0.tgz#62283c0ce7e9d11d8190ec3e89589102288830fd"
+  integrity sha512-fEGOdDf4k4bcveArbEpj01pJcH8pOCKLxmSj2POFdGvEk5YK0NZVnH6BXpW/PzACHPRsuh1YKAhNZyFnD28oxg==
+  dependencies:
+    exenv "^1.2.2"
+    react-from-dom "^0.6.0"
 
 react-is@^16.8.1:
   version "16.13.1"
