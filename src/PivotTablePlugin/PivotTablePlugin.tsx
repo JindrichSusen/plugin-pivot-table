@@ -174,6 +174,7 @@ export class PivotTableComponent extends React.Component<{
   }
 
   onCancel() {
+    this.currentView.restoreToSavedState();
     this.showEditMode = false;
   }
 
@@ -281,6 +282,10 @@ class TableView implements IListViewItem {
 
   @observable
   tableState: ITableState = {};
+
+  restoreToSavedState() {
+    this.tableState = this.persistedState.tableState;
+  }
 }
 
 interface IPersistAbleState {
