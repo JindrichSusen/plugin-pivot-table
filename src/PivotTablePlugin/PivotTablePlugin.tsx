@@ -345,6 +345,7 @@ class TableView implements IListViewItem {
 
   restoreToSavedState() {
     this.tableState = this.persistedState.tableState;
+    this.name = this.persistedState.name;
   }
 }
 
