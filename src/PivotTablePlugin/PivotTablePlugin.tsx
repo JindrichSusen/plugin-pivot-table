@@ -43,6 +43,7 @@ import { IListViewItem, SimpleListView } from "./SimpleListView";
 import { v4 as uuidv4 } from 'uuid';
 import { SimpleInput } from "./SimpleInput";
 import cx from "classnames";
+import { localizations } from "./PivotTablePluginLocalization";
 
 const PlotlyRenderers = createPlotlyRenderers(Plot);
 
@@ -69,16 +70,25 @@ export class PivotTablePlugin implements ISectionPlugin {
   }
 
   getComponent(data: IPluginData, createLocalizer: (localizations: ILocalization[]) => ILocalizer): JSX.Element {
-
     let dataView = data.dataView;
+    let localizer = createLocalizer(localizations);
     const tableData = [dataView.properties.map(prop => prop.name)];
+    const booleanPropertyIndices = dataView.properties
+      .filter(prop => prop.type === "CheckBox")
+      .map(prop => dataView.properties.indexOf(prop));
     for (const row of dataView.tableRows) {
       const values = this.getPropertyValues(dataView, row, dataView.properties);
+      if(booleanPropertyIndices.length > 0){
+        for (const index of booleanPropertyIndices) {
+          values[index] = values[index]?.toString() ?? "null";
+        }
+      }
       tableData.push(values);
     }
     return <PivotTableComponent
       data={tableData}
       pluginData={data}
+      localizer={localizer}
     />
   }
 
@@ -88,7 +98,8 @@ export class PivotTablePlugin implements ISectionPlugin {
 @observer
 export class PivotTableComponent extends React.Component<{
   data: string[][],
-  pluginData: IPluginData
+  pluginData: IPluginData,
+  localizer: ILocalizer
 }> {
   readonly tableViewNameTemplate = "New Table View";
 
@@ -116,6 +127,12 @@ export class PivotTableComponent extends React.Component<{
       this.views = config.map(viewConfig => new TableView(viewConfig.name, uuidv4(), viewConfig.tableState));
       this.currentView = this.views[0];
     }
+  }
+
+  translate(key: string, parameters?: {
+    [key: string]: any;
+  }){
+    return this.props.localizer.translate(key, parameters);
   }
 
   getPersistedConfig() {
