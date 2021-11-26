@@ -17,36 +17,21 @@ You should have received a copy of the GNU General Public License
 along with ORIGAM. If not, see <http://www.gnu.org/licenses/>.
 */
 
-.root {
-    overflow-y: visible;
-    height: 100%;
+.editorContainer {
+  display: flex;
+  flex-direction: row;
 }
 
-div.root > div:global(.cell) {
-  height: 25px;
+.input {
+  width: 100%;
+  margin-right: 3px;
 }
 
+.notification {
+  z-index: 100;
 
-.item {
-  padding-left: 10px;
-  padding-right: 10px;
-  cursor: pointer;
-  overflow: hidden;
-}
-.itemText {
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-.buttonContainer {
-  margin-left: 5px;
-}
-
-.newItemButton {
-  text-align: center;
-  cursor: pointer;
-}
-
-.cell {
-  justify-content: space-between;
+  & :global(.red) {
+    color: var(--error1);
+    text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+  }
 }

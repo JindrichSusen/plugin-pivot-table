@@ -6,6 +6,25 @@
   display: block;
 }
 
+button.redButton {
+  background: var(--error1);
+  border-color: var(--error1);
+  color: var(--background1);
+  &:hover {
+    background: var(--background1);
+    color: var(--error1);
+  }
+}
+button.greenButton {
+  background: var(--ok1);
+  border-color: var(--ok1);
+  color: var(--background1);
+  &:hover {
+    background: var(--background1);
+    color: var(--ok1);
+  }
+}
+
 .topToolbar {
   display: flex;
   flex-direction: row;
@@ -20,6 +39,16 @@
 .editModeRoot {
   display: flex;
   flex-direction: row;
+}
+
+.input {
+  margin-right: 5px;
+  margin-left: 8px;
+  width: 210px;
+}
+
+.listViewContainer {
+  width: 180px;
 }
 
 // react-pivottable

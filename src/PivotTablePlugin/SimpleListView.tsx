@@ -5,11 +5,14 @@ import "./SimpleListView.module.scss";
 import SD from "@origam/components/src/components/Dropdown/Dropdown.module.scss"
 import cx from "classnames";
 import { observable } from "mobx";
+import { EditButton } from "./EditButton";
 
 @observer
 export class SimpleListView<T extends IListViewItem> extends React.PureComponent<{
   items: T[];
   onSelectionChanged?: (item: T) => void;
+  onEditItemClicked: (item: T) => void;
+  onNewItemClicked: () => void;
   selectedItem: T | undefined
 }> {
 
@@ -28,16 +31,32 @@ export class SimpleListView<T extends IListViewItem> extends React.PureComponent
         {this.props.items
           .map((item, i) =>
             <div
-              key={item.id}
               className={bodyCellClass(i, this.props.selectedItem === item, this.itemWithCursorId === item.id )}
+              key={item.id}
               onClick={() => this.onItemClick(item)}
               onMouseEnter={() => this.itemWithCursorId = item.id}
               onMouseLeave={() => this.itemWithCursorId = undefined}
             >
-              {item.name}
-          </div>
+              <div className={S.itemText}>
+                {item.name}
+              </div>
+              <div className={S.buttonContainer}>
+                <EditButton
+                  isEnabled={this.itemWithCursorId === item.id}
+                  isVisible={this.itemWithCursorId === item.id}
+                  onClick={() => this.props.onEditItemClicked(item)}
+                  tooltip={"Edit"}
+                />
+              </div>
+            </div>
           )
         }
+        <div
+          onClick={() => this.props.onNewItemClicked()}
+          className={S.newItemButton}
+        >
+          Create New View
+        </div>
       </div>
     );
   }
@@ -49,5 +68,5 @@ export interface IListViewItem {
 }
 
 function bodyCellClass(rowIndex: number, selected: boolean, withCursor: boolean) {
-  return cx("cell", rowIndex % 2 ? "ord2" : "ord1", {withCursor, selected});
+  return cx(S.cell, "cell", rowIndex % 2 ? "ord2" : "ord1", {withCursor, selected});
 }

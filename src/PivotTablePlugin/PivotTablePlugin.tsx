@@ -41,6 +41,8 @@ import createPlotlyRenderers from 'react-pivottable/PlotlyRenderers';
 import { Button } from "@origam/components";
 import { IListViewItem, SimpleListView } from "./SimpleListView";
 import { v4 as uuidv4 } from 'uuid';
+import { SimpleInput } from "./SimpleInput";
+import cx from "classnames";
 
 const PlotlyRenderers = createPlotlyRenderers(Plot);
 
@@ -100,6 +102,9 @@ export class PivotTableComponent extends React.Component<{
 
   @observable
   showEditMode = false;
+
+  @observable
+  viewNameErrorMessage: string | undefined;
 
   constructor(props: any) {
     super(props);
@@ -162,7 +167,7 @@ export class PivotTableComponent extends React.Component<{
       this.currentView = this.views[newViewIndex];
     }
     this.showEditMode = false
-    yield this.onSave();
+    yield this.persistViews();
   }
 
   @action
@@ -176,8 +181,8 @@ export class PivotTableComponent extends React.Component<{
   @action
   async newTableView() {
     this.currentView = this.createTableView();
-    await this.onSave();
     this.showEditMode = true;
+    await this.persistViews();
   }
 
   @action
@@ -188,10 +193,14 @@ export class PivotTableComponent extends React.Component<{
 
   @action
   async onSave() {
+    await this.persistViews();
+    this.showEditMode = false;
+  }
+
+  private async persistViews() {
     this.currentView.updatePersistedState();
     let json = JSON.stringify(this.views.map(view => view.persistedState));
     await this.dataView.saveConfiguration("PivotTablePlugin", json);
-    this.showEditMode = false;
   }
 
   @action
@@ -203,25 +212,42 @@ export class PivotTableComponent extends React.Component<{
   @action
   onEdit() {
     this.showEditMode = true;
+    this.onNameChange(this.currentView.name);
+  }
+
+  @action
+  onEditItemClicked(item: TableView){
+    this.currentView = item;
+    this.onEdit();
+  }
+
+  onNameChange(value: string) {
+    this.viewNameErrorMessage = !value
+      ? "Name cannot be empty"
+      : undefined;
+    this.currentView.name = value;
   }
 
   renderEditMode() {
     return <div className={S.tableContainer}>
       <div className={S.topToolbar}>
-        <div>{"View Name:"}</div>
-        <input
+        <SimpleInput
+          errorMessage={this.viewNameErrorMessage}
+          className={S.input}
           value={this.currentView.name}
-          onChange={event => this.currentView.name = event.target.value}/>
+          onChange={event => this.onNameChange(event.target.value)}
+          placeholder="View name"/>
         <Button
-          className={S.button}
+          className={cx(S.button, !this.viewNameErrorMessage ? S.greenButton : "")}
           label={"Save"}
+          disabled={!!this.viewNameErrorMessage}
           onClick={async () => await this.onSave()}/>
         <Button
           className={S.button}
           label={"Cancel"}
           onClick={() => this.onCancel()}/>
         <Button
-          className={S.button}
+          className={cx(S.button, S.redButton)}
           label={this.views.length === 1 && this.currentView.name === this.tableViewNameTemplate ? "Clear" : "Delete"}
           onClick={async () => await (this.props.pluginData as any).guiHelper.runGeneratorInFlowWithHandler(this.deleteCurrentTableView())}/>
       </div>
@@ -236,18 +262,12 @@ export class PivotTableComponent extends React.Component<{
 
   renderDisplayMode() {
     return <div className={S.editModeRoot}>
-      <div>
-        <div className={S.topToolbar}>
-          <Button
-            label={"New"}
-            onClick={async () => await this.newTableView()}/>
-          <Button
-            label={"Edit"}
-            onClick={() => this.onEdit()}/>
-        </div>
+      <div className={S.listViewContainer}>
         <SimpleListView
           items={this.views}
           onSelectionChanged={item => this.currentView = item}
+          onEditItemClicked={item => this.onEditItemClicked(item)}
+          onNewItemClicked={async () => await this.newTableView()}
           selectedItem={this.currentView}/>
       </div>
       <div>
