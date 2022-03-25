@@ -6,6 +6,7 @@ import SD from "@origam/components/src/components/Dropdown/Dropdown.module.scss"
 import cx from "classnames";
 import { observable } from "mobx";
 import { EditButton } from "./EditButton";
+import { ILocalizer } from "@origam/plugin-interfaces";
 
 @observer
 export class SimpleListView<T extends IListViewItem> extends React.PureComponent<{
@@ -13,8 +14,11 @@ export class SimpleListView<T extends IListViewItem> extends React.PureComponent
   onSelectionChanged?: (item: T) => void;
   onEditItemClicked: (item: T) => void;
   onNewItemClicked: () => void;
-  selectedItem: T | undefined
+  selectedItem: T | undefined;
+  localizer: ILocalizer
 }> {
+
+  T = (key: string, parameters?: { [key: string]: any; }) => this.props.localizer.translate(key, parameters);
 
   @observable
   itemWithCursorId: string | undefined;
@@ -45,7 +49,7 @@ export class SimpleListView<T extends IListViewItem> extends React.PureComponent
                   isEnabled={this.itemWithCursorId === item.id}
                   isVisible={this.itemWithCursorId === item.id}
                   onClick={() => this.props.onEditItemClicked(item)}
-                  tooltip={"Edit"}
+                  tooltip={this.T("Edit")}
                 />
               </div>
             </div>
@@ -55,7 +59,7 @@ export class SimpleListView<T extends IListViewItem> extends React.PureComponent
           onClick={() => this.props.onNewItemClicked()}
           className={S.newItemButton}
         >
-          Create New View
+          {this.T("Create New View")}
         </div>
       </div>
     );

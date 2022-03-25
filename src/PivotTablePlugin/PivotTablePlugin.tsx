@@ -101,8 +101,8 @@ export class PivotTableComponent extends React.Component<{
   pluginData: IPluginData,
   localizer: ILocalizer
 }> {
-  readonly tableViewNameTemplate = "New Table View";
-
+  T = (key: string, parameters?: { [key: string]: any; }) => this.props.localizer.translate(key, parameters);
+  readonly tableViewNameTemplate = this.props.localizer.translate("New Table View");
   dataView: IPluginDataView;
 
   @observable
@@ -256,16 +256,18 @@ export class PivotTableComponent extends React.Component<{
           placeholder="View name"/>
         <Button
           className={cx(S.button, !this.viewNameErrorMessage ? S.greenButton : "")}
-          label={"Save"}
+          label={this.T("Save")}
           disabled={!!this.viewNameErrorMessage}
           onClick={async () => await this.onSave()}/>
         <Button
           className={S.button}
-          label={"Cancel"}
+          label={this.T("Cancel")}
           onClick={() => this.onCancel()}/>
         <Button
           className={cx(S.button, S.redButton)}
-          label={this.views.length === 1 && this.currentView.name === this.tableViewNameTemplate ? "Clear" : "Delete"}
+          label={this.views.length === 1 && this.currentView.name === this.tableViewNameTemplate
+            ? this.T("Clear")
+            : this.T("Delete")}
           onClick={async () => await (this.props.pluginData as any).guiHelper.runGeneratorInFlowWithHandler(this.deleteCurrentTableView())}/>
       </div>
       <PivotTableUI
@@ -285,7 +287,9 @@ export class PivotTableComponent extends React.Component<{
           onSelectionChanged={item => this.currentView = item}
           onEditItemClicked={item => this.onEditItemClicked(item)}
           onNewItemClicked={async () => await this.newTableView()}
-          selectedItem={this.currentView}/>
+          selectedItem={this.currentView}
+          localizer={this.props.localizer}
+        />
       </div>
       <div>
         <PivotTable

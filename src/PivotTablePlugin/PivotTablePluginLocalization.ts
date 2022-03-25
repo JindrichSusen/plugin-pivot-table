@@ -21,8 +21,37 @@ export const localizations = [
   {
     locale: "en-US",
     translations: {
-      true: "true",
-      false: "false"
+      Save: "Save",
+      Cancel: "Cancel",
+      Clear: "Clear",
+      Delete: "Delete",
+      "New Table View": "New Table View",
+      "Create New View": "Create New View",
+      Edit: "Edit"
+    }
+  },
+  {
+    locale: "de-CH",
+    translations: {
+      Save: "Save",
+      Cancel: "Cancel",
+      Clear: "Clear",
+      Delete: "Delete",
+      "New Table View": "New Table View",
+      "Create New View": "Create New View",
+      Edit: "Edit"
+    }
+  },
+  {
+    locale: "fr-CH",
+    translations: {
+      Save: "Save",
+      Cancel: "Cancel",
+      Clear: "Clear",
+      Delete: "Delete",
+      "New Table View": "New Table View",
+      "Create New View": "Create New View",
+      Edit: "Edit"
     }
   },
 ]
