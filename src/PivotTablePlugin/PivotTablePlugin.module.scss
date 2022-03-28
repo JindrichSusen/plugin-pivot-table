@@ -57,3 +57,13 @@ table:global(.pvtTable){
   margin-left: 10px;
   margin-top: 0;
 }
+
+@media print {
+  .noPrint{
+    display:none;
+  }
+
+  div > table:global(.pvtTable){
+    margin-left:0;
+  }
+}

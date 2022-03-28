@@ -281,7 +281,7 @@ export class PivotTableComponent extends React.Component<{
 
   renderDisplayMode() {
     return <div className={S.editModeRoot}>
-      <div className={S.listViewContainer}>
+      <div className={cx(S.listViewContainer, S.noPrint)}>
         <SimpleListView
           items={this.views}
           onSelectionChanged={item => this.currentView = item}
