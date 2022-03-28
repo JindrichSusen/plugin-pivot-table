@@ -33,25 +33,25 @@ export const localizations = [
   {
     locale: "de-CH",
     translations: {
-      Save: "Save",
-      Cancel: "Cancel",
-      Clear: "Clear",
-      Delete: "Delete",
-      "New Table View": "New Table View",
-      "Create New View": "Create New View",
-      Edit: "Edit"
+      Save: "Speichern",
+      Cancel: "Abbrechen",
+      Clear: "Löschen",
+      Delete: "Entfernen",
+      "New Table View": "Neue Tabellenansicht",
+      "Create New View": "Neue Ansicht anlegen",
+      Edit: "Bearbeiten"
     }
   },
   {
     locale: "fr-CH",
     translations: {
-      Save: "Save",
-      Cancel: "Cancel",
-      Clear: "Clear",
-      Delete: "Delete",
-      "New Table View": "New Table View",
-      "Create New View": "Create New View",
-      Edit: "Edit"
+      Save: "Sauvegarder",
+      Cancel: "Annuler",
+      Clear: "Défricher",
+      Delete: "Supprimer",
+      "New Table View": "Nouvelle vue du tableau",
+      "Create New View": "Créer une nouvelle vue",
+      Edit: "Modifier"
     }
   },
 ]
