@@ -26,7 +26,9 @@ declare module '*.module.scss' {
 declare module 'react-pivottable/PivotTableUI'{
   export default class PivotTableUI extends React.Component<{
     data: any,
-    renderers: any
+    renderers: any;
+    aggregators: any;
+    aggregatorName: string;
     onChange(event: any): void;
   }> {
   }
@@ -41,6 +43,14 @@ declare module 'react-pivottable/PivotTable'{
 }
 
 declare module 'react-pivottable/TableRenderers'{
+}
+
+declare module 'react-pivottable/Utilities'{
+  export class PivotData {
+    constructor(props: any)
+  }
+
+  export const aggregators : any;
 }
 
 declare module 'react-plotly.js'{

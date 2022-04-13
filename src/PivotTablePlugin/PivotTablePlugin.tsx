@@ -35,7 +35,8 @@ import {
 import { observer } from "mobx-react";
 import "./PivotTablePlugin.module.scss";
 import S from "./PivotTablePlugin.module.scss";
-import TableRenderers from 'react-pivottable/TableRenderers';
+// import TableRenderers from 'react-pivottable/TableRenderers';
+import CustomTableRenderers, { setTranslationFunction } from './CustomTableRenderers'
 import Plot from 'react-plotly.js';
 import createPlotlyRenderers from 'react-pivottable/PlotlyRenderers';
 import { Button } from "@origam/components";
@@ -44,6 +45,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { SimpleInput } from "./SimpleInput";
 import cx from "classnames";
 import { localizations } from "./PivotTablePluginLocalization";
+import { aggregators } from "react-pivottable/Utilities";
 
 const PlotlyRenderers = createPlotlyRenderers(Plot);
 
@@ -85,6 +87,7 @@ export class PivotTablePlugin implements ISectionPlugin {
       }
       tableData.push(values);
     }
+    setTranslationFunction((key: string, parameters?: { [key: string]: any; }) => localizer.translate(key, parameters))
     return <PivotTableComponent
       data={tableData}
       pluginData={data}
@@ -117,6 +120,8 @@ export class PivotTableComponent extends React.Component<{
   @observable
   viewNameErrorMessage: string | undefined;
 
+  translatedAggregators = {};
+
   constructor(props: any) {
     super(props);
     this.dataView = this.props.pluginData.dataView;
@@ -126,6 +131,13 @@ export class PivotTableComponent extends React.Component<{
     } else {
       this.views = config.map(viewConfig => new TableView(viewConfig.name, uuidv4(), viewConfig.tableState));
       this.currentView = this.views[0];
+    }
+    this.translateAggregators();
+  }
+
+  translateAggregators(){
+    for (let aggregatorName of Object.keys(aggregators)) {
+      this.translatedAggregators[this.T(aggregatorName)] = aggregators[aggregatorName];
     }
   }
 
@@ -273,7 +285,9 @@ export class PivotTableComponent extends React.Component<{
       <PivotTableUI
         data={this.props.data}
         onChange={tableState => this.onTableChange(tableState)}
-        renderers={Object.assign({}, TableRenderers, PlotlyRenderers)}
+        aggregators={this.translatedAggregators}
+        aggregatorName={Object.keys(this.translatedAggregators)[0]}
+        renderers={Object.assign({}, CustomTableRenderers, PlotlyRenderers)}
         {...this.currentView.tableState}
       />
     </div>
@@ -294,7 +308,7 @@ export class PivotTableComponent extends React.Component<{
       <div>
         <PivotTable
           data={this.props.data}
-          renderers={Object.assign({}, TableRenderers, PlotlyRenderers)}
+          renderers={Object.assign({}, CustomTableRenderers, PlotlyRenderers)}
           {...this.currentView.tableState}
         />
       </div>
