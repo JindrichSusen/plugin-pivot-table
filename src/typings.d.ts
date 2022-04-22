@@ -37,7 +37,8 @@ declare module 'react-pivottable/PivotTableUI'{
 declare module 'react-pivottable/PivotTable'{
   export default class PivotTable extends React.Component<{
     data: any,
-    renderers: any
+    renderers: any,
+    aggregators?: any;
   }> {
   }
 }

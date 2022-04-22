@@ -64,7 +64,6 @@ export class PivotTablePlugin implements ISectionPlugin {
 
   @action
   onTableChange(tableState: any) {
-    console.log(tableState);
     this.tableState = tableState;
   }
 
@@ -105,8 +104,9 @@ export class PivotTableComponent extends React.Component<{
   pluginData: IPluginData,
   localizer: ILocalizer
 }> {
-  T = (key: string, parameters?: { [key: string]: any; }) => this.props.localizer.translate(key, parameters);
-  readonly tableViewNameTemplate = this.props.localizer.translate("New Table View");
+  // T = (key: string, parameters?: { [key: string]: any; }) => this.props.localizer.translate(key, parameters);
+  T =  this.props.localizer.translate.bind(this.props.localizer);
+  readonly tableViewNameTemplate = this.props.localizer.translate("newTableViewTemplate");
   dataView: IPluginDataView;
 
   @observable
@@ -132,7 +132,9 @@ export class PivotTableComponent extends React.Component<{
     if (!config) {
       this.currentView = this.createTableView();
     } else {
-      this.views = config.map(viewConfig => new TableView(viewConfig.name, uuidv4(), viewConfig.tableState));
+      console.log(config)
+      this.views = config.map(viewConfig =>
+        new TableView(viewConfig.name, uuidv4(), viewConfig.tableState, this.props.localizer));
       this.currentView = this.views[0];
     }
     this.translateAggregators();
@@ -167,7 +169,7 @@ export class PivotTableComponent extends React.Component<{
       if (this.views.map(view => view.name).includes(newName)) {
         newName = `${this.tableViewNameTemplate} (${i})`;
       } else {
-        let tableView = new TableView(newName, uuidv4(), {});
+        let tableView = new TableView(newName, uuidv4(), {}, this.props.localizer);
         this.views.push(tableView);
         return tableView;
       }
@@ -219,7 +221,6 @@ export class PivotTableComponent extends React.Component<{
 
   @action
   onTableChange(tableState: any) {
-    console.log(tableState);
     this.currentView.tableState = tableState;
   }
 
@@ -271,18 +272,18 @@ export class PivotTableComponent extends React.Component<{
           placeholder="View name"/>
         <Button
           className={cx(S.button, !this.viewNameErrorMessage ? S.greenButton : "")}
-          label={this.T("Save")}
+          label={this.T("save")}
           disabled={!!this.viewNameErrorMessage}
           onClick={async () => await this.onSave()}/>
         <Button
           className={S.button}
-          label={this.T("Cancel")}
+          label={this.T("cancel")}
           onClick={() => this.onCancel()}/>
         <Button
           className={cx(S.button, S.redButton)}
           label={this.views.length === 1 && this.currentView.name === this.tableViewNameTemplate
-            ? this.T("Clear")
-            : this.T("Delete")}
+            ? this.T("clear")
+            : this.T("delete")}
           onClick={async () => await (this.props.pluginData as any).guiHelper.runGeneratorInFlowWithHandler(this.deleteCurrentTableView())}/>
       </div>
       <PivotTableUI
@@ -303,7 +304,7 @@ export class PivotTableComponent extends React.Component<{
           trigger={() =>
             <Button
               className={S.button}
-              label={"Print"}
+              label={this.T("print")}
               onClick={() => {}}/>
           }
           content={() => this.printComponentRef.current}
@@ -320,6 +321,7 @@ export class PivotTableComponent extends React.Component<{
       <div ref={this.printComponentRef}>
         <h1 className={S.printOnly}>{this.currentView.name}</h1>
         <PivotTable
+          aggregators={this.translatedAggregators}
           data={this.props.data}
           renderers={Object.assign({}, CustomTableRenderers, PlotlyRenderers)}
           {...this.currentView.tableState}
@@ -340,23 +342,65 @@ export class PivotTableComponent extends React.Component<{
 class TableView implements IListViewItem {
   @observable
   name = ""
-
+  locale: string;
   persistedState: IPersistAbleState;
+  private T: (key: string, parameters?: { [p: string]: any }) => string;
 
-  constructor(name: string, public id: string, state: ITableState) {
+  constructor(
+    name: string,
+    public id: string,
+    state: ITableState,
+    localizer: ILocalizer
+  ) {
+    this.T = localizer.translate.bind(localizer);
+    this.locale = localizer.locale;
     this.name = name;
-    this.tableState = state;
+    this.tableState = this.translateAggregatorNames(state);
+    console.log(this.tableState)
     this.persistedState = {
       name: this.name,
-      tableState: state
+      tableState: this.tableState
     };
+  }
+
+  private translateAggregatorNames(state: ITableState){
+    console.log(state)
+    const localization = this.getCurrentLocalization();
+    console.log("aggregatorName before translation: " + state["aggregatorName"])
+    if(state["aggregatorName"] && localization["aggregatorName"]){
+      state["aggregatorName"] = this.T(state["aggregatorName"] as string);
+    }else{
+      state["aggregatorName"] = this.T("Count");
+    }
+    console.log("aggregatorName: " + state["aggregatorName"])
+    return state;
+  }
+
+  private getCurrentLocalization(){
+    const localization = localizations.find(localization => localization["locale"] === this.locale);
+    if(!localization){
+      throw new Error("Could not find localization for current locale: " + this.locale)
+    }
+    return localization;
+  }
+
+  private localizedAggregatorNameToKey(localizedName: string){
+    if(!localizedName){
+      return localizedName;
+    }
+    const localization = this.getCurrentLocalization();
+    const key = Object.keys(localization.translations).find(key => localization.translations[key] === localizedName);
+    if(!key){
+      throw new Error(`Could not find localization key for aggregator named "${localizedName}"`)
+    }
+    return key;
   }
 
   private toPersistAbleState() {
     return {
       name: this.name,
       tableState: {
-        aggregatorName: this.tableState.aggregatorName,
+        aggregatorName: this.localizedAggregatorNameToKey(this.tableState.aggregatorName as string),
         colOrder: toJS(this.tableState.colOrder),
         cols: toJS(this.tableState.cols),
         rendererName: this.tableState.rendererName,
@@ -379,6 +423,10 @@ class TableView implements IListViewItem {
     this.name = this.persistedState.name;
   }
 }
+
+// class AggregatorTranslator{
+//
+// }
 
 interface IPersistAbleState {
   name: string;

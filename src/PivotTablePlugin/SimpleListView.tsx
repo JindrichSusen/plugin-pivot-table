@@ -49,7 +49,7 @@ export class SimpleListView<T extends IListViewItem> extends React.PureComponent
                   isEnabled={this.itemWithCursorId === item.id}
                   isVisible={this.itemWithCursorId === item.id}
                   onClick={() => this.props.onEditItemClicked(item)}
-                  tooltip={this.T("Edit")}
+                  tooltip={this.T("edit")}
                 />
               </div>
             </div>
@@ -59,7 +59,7 @@ export class SimpleListView<T extends IListViewItem> extends React.PureComponent
           onClick={() => this.props.onNewItemClicked()}
           className={S.newItemButton}
         >
-          {this.T("Create New View")}
+          {this.T("createNewView")}
         </div>
       </div>
     );
