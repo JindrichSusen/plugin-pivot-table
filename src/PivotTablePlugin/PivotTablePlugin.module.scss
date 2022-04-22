@@ -1,4 +1,4 @@
-.tableContainer{
+.tableContainer {
   overflow: auto;
 }
 
@@ -10,15 +10,18 @@ button.redButton {
   background: var(--error1);
   border-color: var(--error1);
   color: var(--background1);
+
   &:hover {
     background: var(--background1);
     color: var(--error1);
   }
 }
+
 button.greenButton {
   background: var(--ok1);
   border-color: var(--ok1);
   color: var(--background1);
+
   &:hover {
     background: var(--background1);
     color: var(--ok1);
@@ -32,6 +35,12 @@ button.greenButton {
   padding-bottom: 10px;
 }
 
+.buttonRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .topToolbar > * {
   margin-right: 5px;
 }
@@ -39,6 +48,7 @@ button.greenButton {
 .editModeRoot {
   display: flex;
   flex-direction: row;
+  margin-bottom: 10px;
 }
 
 .input {
@@ -49,21 +59,32 @@ button.greenButton {
 
 .listViewContainer {
   width: 180px;
+  > :first-child {
+    margin-bottom: 10px;
+  }
 }
 
 // react-pivottable
 
-table:global(.pvtTable){
+table:global(.pvtTable) {
   margin-left: 10px;
   margin-top: 0;
 }
 
 @media print {
-  .noPrint{
-    display:none;
+  .noPrint {
+    display: none;
   }
 
-  div > table:global(.pvtTable){
-    margin-left:0;
+  div > table:global(.pvtTable) {
+    margin-left: 0;
   }
+
+  h1.printOnly {
+    display: block;
+  }
+}
+
+.printOnly {
+  display: none;
 }

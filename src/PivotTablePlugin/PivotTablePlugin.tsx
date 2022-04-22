@@ -46,6 +46,7 @@ import { SimpleInput } from "./SimpleInput";
 import cx from "classnames";
 import { localizations } from "./PivotTablePluginLocalization";
 import { aggregators } from "react-pivottable/Utilities";
+import ReactToPrint from "react-to-print";
 
 const PlotlyRenderers = createPlotlyRenderers(Plot);
 
@@ -80,7 +81,7 @@ export class PivotTablePlugin implements ISectionPlugin {
       .map(prop => dataView.properties.indexOf(prop));
     for (const row of dataView.tableRows) {
       const values = this.getPropertyValues(dataView, row, dataView.properties);
-      if(booleanPropertyIndices.length > 0){
+      if (booleanPropertyIndices.length > 0) {
         for (const index of booleanPropertyIndices) {
           values[index] = values[index]?.toString() ?? "null";
         }
@@ -120,6 +121,8 @@ export class PivotTableComponent extends React.Component<{
   @observable
   viewNameErrorMessage: string | undefined;
 
+  printComponentRef = React.createRef<HTMLDivElement>();
+
   translatedAggregators = {};
 
   constructor(props: any) {
@@ -135,7 +138,7 @@ export class PivotTableComponent extends React.Component<{
     this.translateAggregators();
   }
 
-  translateAggregators(){
+  translateAggregators() {
     for (let aggregatorName of Object.keys(aggregators)) {
       this.translatedAggregators[this.T(aggregatorName)] = aggregators[aggregatorName];
     }
@@ -143,7 +146,7 @@ export class PivotTableComponent extends React.Component<{
 
   translate(key: string, parameters?: {
     [key: string]: any;
-  }){
+  }) {
     return this.props.localizer.translate(key, parameters);
   }
 
@@ -175,11 +178,11 @@ export class PivotTableComponent extends React.Component<{
   *deleteCurrentTableView() {
 
     const reallyDelete = (yield this.props.pluginData.guiHelper.askYesNoQuestion(
-      "Delete view",
-      "Do you really want to delete this view?")
+        "Delete view",
+        "Do you really want to delete this view?")
     ) as boolean;
 
-    if(! reallyDelete){
+    if (!reallyDelete) {
       return;
     }
 
@@ -245,7 +248,7 @@ export class PivotTableComponent extends React.Component<{
   }
 
   @action
-  onEditItemClicked(item: TableView){
+  onEditItemClicked(item: TableView) {
     this.currentView = item;
     this.onEdit();
   }
@@ -296,6 +299,15 @@ export class PivotTableComponent extends React.Component<{
   renderDisplayMode() {
     return <div className={S.editModeRoot}>
       <div className={cx(S.listViewContainer, S.noPrint)}>
+        <ReactToPrint
+          trigger={() =>
+            <Button
+              className={S.button}
+              label={"Print"}
+              onClick={() => {}}/>
+          }
+          content={() => this.printComponentRef.current}
+        />
         <SimpleListView
           items={this.views}
           onSelectionChanged={item => this.currentView = item}
@@ -305,7 +317,8 @@ export class PivotTableComponent extends React.Component<{
           localizer={this.props.localizer}
         />
       </div>
-      <div>
+      <div ref={this.printComponentRef}>
+        <h1 className={S.printOnly}>{this.currentView.name}</h1>
         <PivotTable
           data={this.props.data}
           renderers={Object.assign({}, CustomTableRenderers, PlotlyRenderers)}
