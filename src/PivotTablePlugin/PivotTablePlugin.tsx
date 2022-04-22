@@ -45,8 +45,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { SimpleInput } from "./SimpleInput";
 import cx from "classnames";
 import { localizations } from "./PivotTablePluginLocalization";
-import { aggregators } from "react-pivottable/Utilities";
 import ReactToPrint from "react-to-print";
+import { AggregatorTranslator } from "./AggregatorTranslator";
+import { IPersistAbleState, ITableState } from "./interfaces";
 
 const PlotlyRenderers = createPlotlyRenderers(Plot);
 
@@ -104,7 +105,6 @@ export class PivotTableComponent extends React.Component<{
   pluginData: IPluginData,
   localizer: ILocalizer
 }> {
-  // T = (key: string, parameters?: { [key: string]: any; }) => this.props.localizer.translate(key, parameters);
   T =  this.props.localizer.translate.bind(this.props.localizer);
   readonly tableViewNameTemplate = this.props.localizer.translate("newTableViewTemplate");
   dataView: IPluginDataView;
@@ -123,10 +123,11 @@ export class PivotTableComponent extends React.Component<{
 
   printComponentRef = React.createRef<HTMLDivElement>();
 
-  translatedAggregators = {};
+  aggregatorTranslator: AggregatorTranslator;
 
   constructor(props: any) {
     super(props);
+    this.aggregatorTranslator =  new AggregatorTranslator(this.props.localizer);
     this.dataView = this.props.pluginData.dataView;
     const config = this.getPersistedConfig();
     if (!config) {
@@ -134,15 +135,13 @@ export class PivotTableComponent extends React.Component<{
     } else {
       console.log(config)
       this.views = config.map(viewConfig =>
-        new TableView(viewConfig.name, uuidv4(), viewConfig.tableState, this.props.localizer));
+        new TableView(
+          viewConfig.name,
+          uuidv4(),
+          this.aggregatorTranslator.translateAggregatorNames(viewConfig.tableState),
+          this.aggregatorTranslator.localizedAggregatorNameToKey.bind(this.aggregatorTranslator))
+      );
       this.currentView = this.views[0];
-    }
-    this.translateAggregators();
-  }
-
-  translateAggregators() {
-    for (let aggregatorName of Object.keys(aggregators)) {
-      this.translatedAggregators[this.T(aggregatorName)] = aggregators[aggregatorName];
     }
   }
 
@@ -169,7 +168,12 @@ export class PivotTableComponent extends React.Component<{
       if (this.views.map(view => view.name).includes(newName)) {
         newName = `${this.tableViewNameTemplate} (${i})`;
       } else {
-        let tableView = new TableView(newName, uuidv4(), {}, this.props.localizer);
+        let tableView = new TableView(
+          newName,
+          uuidv4(),
+          {},
+          this.aggregatorTranslator.localizedAggregatorNameToKey.bind(this.aggregatorTranslator)
+        );
         this.views.push(tableView);
         return tableView;
       }
@@ -289,8 +293,8 @@ export class PivotTableComponent extends React.Component<{
       <PivotTableUI
         data={this.props.data}
         onChange={tableState => this.onTableChange(tableState)}
-        aggregators={this.translatedAggregators}
-        aggregatorName={Object.keys(this.translatedAggregators)[0]}
+        aggregators={this.aggregatorTranslator.translatedAggregators}
+        aggregatorName={Object.keys(this.aggregatorTranslator.translatedAggregators)[0]}
         renderers={Object.assign({}, CustomTableRenderers, PlotlyRenderers)}
         {...this.currentView.tableState}
       />
@@ -321,7 +325,7 @@ export class PivotTableComponent extends React.Component<{
       <div ref={this.printComponentRef}>
         <h1 className={S.printOnly}>{this.currentView.name}</h1>
         <PivotTable
-          aggregators={this.translatedAggregators}
+          aggregators={this.aggregatorTranslator.translatedAggregators}
           data={this.props.data}
           renderers={Object.assign({}, CustomTableRenderers, PlotlyRenderers)}
           {...this.currentView.tableState}
@@ -342,20 +346,19 @@ export class PivotTableComponent extends React.Component<{
 class TableView implements IListViewItem {
   @observable
   name = ""
-  locale: string;
   persistedState: IPersistAbleState;
-  private T: (key: string, parameters?: { [p: string]: any }) => string;
+  aggregatorTranslator: AggregatorTranslator;
+  localizedAggregatorNameToKey: (localizedName: string)=> string;
 
   constructor(
     name: string,
     public id: string,
     state: ITableState,
-    localizer: ILocalizer
-  ) {
-    this.T = localizer.translate.bind(localizer);
-    this.locale = localizer.locale;
+    localizedAggregatorNameToKey: (localizedName: string)=> string,
+   ) {
+    this.localizedAggregatorNameToKey = localizedAggregatorNameToKey;
     this.name = name;
-    this.tableState = this.translateAggregatorNames(state);
+    this.tableState = state;
     console.log(this.tableState)
     this.persistedState = {
       name: this.name,
@@ -363,38 +366,6 @@ class TableView implements IListViewItem {
     };
   }
 
-  private translateAggregatorNames(state: ITableState){
-    console.log(state)
-    const localization = this.getCurrentLocalization();
-    console.log("aggregatorName before translation: " + state["aggregatorName"])
-    if(state["aggregatorName"] && localization["aggregatorName"]){
-      state["aggregatorName"] = this.T(state["aggregatorName"] as string);
-    }else{
-      state["aggregatorName"] = this.T("Count");
-    }
-    console.log("aggregatorName: " + state["aggregatorName"])
-    return state;
-  }
-
-  private getCurrentLocalization(){
-    const localization = localizations.find(localization => localization["locale"] === this.locale);
-    if(!localization){
-      throw new Error("Could not find localization for current locale: " + this.locale)
-    }
-    return localization;
-  }
-
-  private localizedAggregatorNameToKey(localizedName: string){
-    if(!localizedName){
-      return localizedName;
-    }
-    const localization = this.getCurrentLocalization();
-    const key = Object.keys(localization.translations).find(key => localization.translations[key] === localizedName);
-    if(!key){
-      throw new Error(`Could not find localization key for aggregator named "${localizedName}"`)
-    }
-    return key;
-  }
 
   private toPersistAbleState() {
     return {
@@ -422,17 +393,4 @@ class TableView implements IListViewItem {
     this.tableState = this.persistedState.tableState;
     this.name = this.persistedState.name;
   }
-}
-
-// class AggregatorTranslator{
-//
-// }
-
-interface IPersistAbleState {
-  name: string;
-  tableState: ITableState;
-}
-
-interface ITableState {
-  [key: string]: string | string[] | ITableState;
 }
