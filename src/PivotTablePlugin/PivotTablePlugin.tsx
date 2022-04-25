@@ -35,7 +35,6 @@ import {
 import { observer } from "mobx-react";
 import "./PivotTablePlugin.module.scss";
 import S from "./PivotTablePlugin.module.scss";
-// import TableRenderers from 'react-pivottable/TableRenderers';
 import CustomTableRenderers, { setTranslationFunction } from './CustomTableRenderers'
 import Plot from 'react-plotly.js';
 import createPlotlyRenderers from 'react-pivottable/PlotlyRenderers';
@@ -59,8 +58,11 @@ export class PivotTablePlugin implements ISectionPlugin {
   @observable
   tableState = [];
 
-  initialize(xmlAttributes: { [key: string]: string }): void {
+  @observable
+  label = "";
 
+  initialize(xmlAttributes: { [key: string]: string }): void {
+    this.label = xmlAttributes["Label"]
   }
 
   @action
@@ -93,6 +95,7 @@ export class PivotTablePlugin implements ISectionPlugin {
       data={tableData}
       pluginData={data}
       localizer={localizer}
+      label={this.label}
     />
   }
 
@@ -103,7 +106,8 @@ export class PivotTablePlugin implements ISectionPlugin {
 export class PivotTableComponent extends React.Component<{
   data: string[][],
   pluginData: IPluginData,
-  localizer: ILocalizer
+  localizer: ILocalizer,
+  label: string
 }> {
   T =  this.props.localizer.translate.bind(this.props.localizer);
   readonly tableViewNameTemplate = this.props.localizer.translate("newTableViewTemplate");
@@ -133,7 +137,6 @@ export class PivotTableComponent extends React.Component<{
     if (!config) {
       this.currentView = this.createTableView();
     } else {
-      console.log(config)
       this.views = config.map(viewConfig =>
         new TableView(
           viewConfig.name,
@@ -171,7 +174,7 @@ export class PivotTableComponent extends React.Component<{
         let tableView = new TableView(
           newName,
           uuidv4(),
-          {},
+          this.aggregatorTranslator.translateAggregatorNames({}),
           this.aggregatorTranslator.localizedAggregatorNameToKey.bind(this.aggregatorTranslator)
         );
         this.views.push(tableView);
@@ -323,7 +326,7 @@ export class PivotTableComponent extends React.Component<{
         />
       </div>
       <div ref={this.printComponentRef}>
-        <h1 className={S.printOnly}>{this.currentView.name}</h1>
+        <h1 className={S.printOnly}>{this.props.label}</h1>
         <PivotTable
           aggregators={this.aggregatorTranslator.translatedAggregators}
           data={this.props.data}
@@ -347,7 +350,6 @@ class TableView implements IListViewItem {
   @observable
   name = ""
   persistedState: IPersistAbleState;
-  aggregatorTranslator: AggregatorTranslator;
   localizedAggregatorNameToKey: (localizedName: string)=> string;
 
   constructor(
@@ -359,7 +361,6 @@ class TableView implements IListViewItem {
     this.localizedAggregatorNameToKey = localizedAggregatorNameToKey;
     this.name = name;
     this.tableState = state;
-    console.log(this.tableState)
     this.persistedState = {
       name: this.name,
       tableState: this.tableState

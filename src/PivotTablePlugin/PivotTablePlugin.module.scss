@@ -66,10 +66,16 @@ button.greenButton {
 
 // react-pivottable
 
-table:global(.pvtTable) {
+td > table:global(.pvtTable) {
   margin-left: 10px;
   margin-top: 0;
 }
+
+td > div > div:global(.pvtDropdownCurrent){
+  width: 260px;
+}
+
+// printing
 
 @media print {
   .noPrint {
