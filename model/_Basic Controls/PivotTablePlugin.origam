@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<x:file xmlns:x="http://schemas.origam.com/model-persistence/1.0.0" xmlns:asi="http://schemas.origam.com/Origam.Schema.AbstractSchemaItem/6.0.0" xmlns:ci="http://schemas.origam.com/Origam.Schema.GuiModel.ControlItem/6.0.0" xmlns:cpi="http://schemas.origam.com/Origam.Schema.GuiModel.ControlPropertyItem/6.0.0" xmlns:sia="http://schemas.origam.com/Origam.Schema.SchemaItemAncestor/6.0.0">
+  <ci:Control
+    asi:abstract="false"
+    x:id="fc80d120-cd9b-4d22-a072-47bebe07dd40"
+    ci:isComplex="false"
+    asi:name="PivotTablePlugin"
+    ci:namespace="Origam.Gui.Win"
+    ci:requestSaveAfterChangeAllowed="false"
+    ci:toolboxVisibility="FormDesigner"
+    ci:typeName="Origam.Gui.Win.SectionLevelPlugin">
+    <sia:ancestor
+      sia:ancestor="Root/Control/_Basic Controls/SectionLevelPlugin.origam#SectionLevelPlugin/6382f412-b961-46a7-9a34-29aed844b8b9"
+      x:id="14adddae-2de2-4f28-bb31-16091c1a0b55" />
+    <cpi:ControlPropertyItem
+      asi:abstract="false"
+      cpi:bindOnly="false"
+      x:id="da02ee0a-f02d-466f-8bb6-b3f0f8ca4436"
+      cpi:localizable="true"
+      asi:name="Label"
+      cpi:propertyType="String" />
+  </ci:Control>
+</x:file>
