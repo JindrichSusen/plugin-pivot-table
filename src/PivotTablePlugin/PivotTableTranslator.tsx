@@ -1,4 +1,4 @@
-import { ILocalizer } from "@origam/plugin-interfaces";
+import { ILocalizer, IPluginProperty } from "@origam/plugin-interfaces";
 import { aggregators } from "react-pivottable/Utilities";
 import { localizations } from "./PivotTablePluginLocalization";
 import { ITableState } from "./interfaces";
@@ -8,9 +8,12 @@ import { toJS } from "mobx";
 export class PivotTableTranslator {
   locale: string;
   private T: (key: string, parameters?: { [p: string]: any }) => string;
-  translatedAggregators: {[key: string]: string};
+  translatedAggregators: { [key: string]: string };
+  private properties: IPluginProperty[];
 
-  constructor(localizer: ILocalizer) {
+  constructor(localizer: ILocalizer, properties: IPluginProperty[]) {
+    this.properties = properties;
+
     this.T = localizer.translate.bind(localizer);
     this.locale = localizer.locale;
     this.translatedAggregators = this.translateAggregators();
@@ -25,7 +28,37 @@ export class PivotTableTranslator {
   }
 
   localize(state: ITableState) {
-    console.log(state)
+    this.localizeAggregatorName(state);
+    state.cols = this.propertyIdsToNames(state.cols as string[]);
+    state.rows = this.propertyIdsToNames(state.rows as string[]);
+    return state;
+  }
+
+  propertyIdsToNames(ids: string[] | undefined) {
+    if (!ids) {
+      return [];
+    }
+    const names = [];
+    for (const id of ids) {
+      let property = this.properties.find(prop => prop.id === id);
+      if (!property) {
+        console.warn(`Property with id: ${id} was not found. All properties were removed as a consequence.`)
+        return [];
+      }
+      names.push(property.name);
+    }
+    return names;
+  }
+
+  propertyNameToId(name: string) {
+    let property = this.properties.find(prop => prop.name === name);
+    if (!property) {
+      throw new Error(`Property with name: ${name} was not found. The table config could not be saved.`)
+    }
+    return property.id;
+  }
+
+  private localizeAggregatorName(state: ITableState) {
     const localization = this.getCurrentLocalization();
     console.log("aggregatorName before translation: " + state["aggregatorName"])
     if (state["aggregatorName"] && localization["aggregatorName"]) {
@@ -33,18 +66,20 @@ export class PivotTableTranslator {
     } else {
       state["aggregatorName"] = this.T("Count");
     }
-    console.log("aggregatorName: " + state["aggregatorName"])
     return state;
   }
 
-  normalize(state: ITableState){
+  normalize(state: ITableState) {
+    const cols = (state.cols as string[]).map(propertyName => this.propertyNameToId(propertyName));
+    const rows = (state.rows as string[]).map(propertyName => this.propertyNameToId(propertyName));
+
     return {
       aggregatorName: this.localizedAggregatorNameToKey(state.aggregatorName as string),
       colOrder: toJS(state.colOrder),
-      cols: toJS(state.cols),
+      cols: toJS(cols),
       rendererName: state.rendererName,
       rowOrder: toJS(state.rowOrder),
-      rows: toJS(state.rows),
+      rows: toJS(rows),
       vals: toJS(state.vals),
     };
   }

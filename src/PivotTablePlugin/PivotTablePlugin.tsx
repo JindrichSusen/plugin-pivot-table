@@ -131,7 +131,7 @@ export class PivotTableComponent extends React.Component<{
 
   constructor(props: any) {
     super(props);
-    this.translator =  new PivotTableTranslator(this.props.localizer);
+    this.translator =  new PivotTableTranslator(this.props.localizer,  this.props.pluginData.dataView.properties);
     this.dataView = this.props.pluginData.dataView;
     const config = this.getPersistedConfig();
     if (!config) {
