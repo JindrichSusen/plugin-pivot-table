@@ -46,6 +46,7 @@ button.greenButton {
 }
 
 .editModeRoot {
+  overflow: auto;
   display: flex;
   flex-direction: row;
   margin-bottom: 10px;
