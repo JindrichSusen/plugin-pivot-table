@@ -18,7 +18,7 @@ along with ORIGAM. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import { action, observable, toJS } from "mobx";
+import { action, observable } from "mobx";
 import React from "react";
 import PivotTableUI from 'react-pivottable/PivotTableUI';
 import PivotTable from 'react-pivottable/PivotTable';
@@ -45,7 +45,7 @@ import { SimpleInput } from "./SimpleInput";
 import cx from "classnames";
 import { localizations } from "./PivotTablePluginLocalization";
 import ReactToPrint from "react-to-print";
-import { AggregatorTranslator } from "./AggregatorTranslator";
+import { PivotTableTranslator } from "./PivotTableTranslator";
 import { IPersistAbleState, ITableState } from "./interfaces";
 
 const PlotlyRenderers = createPlotlyRenderers(Plot);
@@ -127,11 +127,11 @@ export class PivotTableComponent extends React.Component<{
 
   printComponentRef = React.createRef<HTMLDivElement>();
 
-  aggregatorTranslator: AggregatorTranslator;
+  translator: PivotTableTranslator;
 
   constructor(props: any) {
     super(props);
-    this.aggregatorTranslator =  new AggregatorTranslator(this.props.localizer);
+    this.translator =  new PivotTableTranslator(this.props.localizer);
     this.dataView = this.props.pluginData.dataView;
     const config = this.getPersistedConfig();
     if (!config) {
@@ -141,8 +141,9 @@ export class PivotTableComponent extends React.Component<{
         new TableView(
           viewConfig.name,
           uuidv4(),
-          this.aggregatorTranslator.translateAggregatorNames(viewConfig.tableState),
-          this.aggregatorTranslator.localizedAggregatorNameToKey.bind(this.aggregatorTranslator))
+          viewConfig.tableState,
+          this.translator
+        )
       );
       this.currentView = this.views[0];
     }
@@ -174,8 +175,8 @@ export class PivotTableComponent extends React.Component<{
         let tableView = new TableView(
           newName,
           uuidv4(),
-          this.aggregatorTranslator.translateAggregatorNames({}),
-          this.aggregatorTranslator.localizedAggregatorNameToKey.bind(this.aggregatorTranslator)
+          {},
+          this.translator
         );
         this.views.push(tableView);
         return tableView;
@@ -239,6 +240,9 @@ export class PivotTableComponent extends React.Component<{
 
   private async persistViews() {
     this.currentView.updatePersistedState();
+    // debugger;
+    // this.aggregatorTranslator
+    // this.views.map(view => this.aggregatorTranslator.view.persistedState.tableState)
     let json = JSON.stringify(this.views.map(view => view.persistedState));
     await this.dataView.saveConfiguration("PivotTablePlugin", json);
   }
@@ -296,8 +300,8 @@ export class PivotTableComponent extends React.Component<{
       <PivotTableUI
         data={this.props.data}
         onChange={tableState => this.onTableChange(tableState)}
-        aggregators={this.aggregatorTranslator.translatedAggregators}
-        aggregatorName={Object.keys(this.aggregatorTranslator.translatedAggregators)[0]}
+        aggregators={this.translator.translatedAggregators}
+        aggregatorName={Object.keys(this.translator.translatedAggregators)[0]}
         renderers={Object.assign({}, CustomTableRenderers, PlotlyRenderers)}
         {...this.currentView.tableState}
       />
@@ -328,7 +332,7 @@ export class PivotTableComponent extends React.Component<{
       <div ref={this.printComponentRef}>
         <h1 className={S.printOnly}>{this.props.label}</h1>
         <PivotTable
-          aggregators={this.aggregatorTranslator.translatedAggregators}
+          aggregators={this.translator.translatedAggregators}
           data={this.props.data}
           renderers={Object.assign({}, CustomTableRenderers, PlotlyRenderers)}
           {...this.currentView.tableState}
@@ -350,17 +354,18 @@ class TableView implements IListViewItem {
   @observable
   name = ""
   persistedState: IPersistAbleState;
-  localizedAggregatorNameToKey: (localizedName: string)=> string;
+  private translator: PivotTableTranslator;
 
   constructor(
     name: string,
     public id: string,
     state: ITableState,
-    localizedAggregatorNameToKey: (localizedName: string)=> string,
+    aggregatorTranslator: PivotTableTranslator
    ) {
-    this.localizedAggregatorNameToKey = localizedAggregatorNameToKey;
+    const localize = aggregatorTranslator.localize.bind(aggregatorTranslator);
     this.name = name;
-    this.tableState = state;
+    this.tableState = localize(state);
+    this.translator = aggregatorTranslator;
     this.persistedState = {
       name: this.name,
       tableState: this.tableState
@@ -369,17 +374,10 @@ class TableView implements IListViewItem {
 
 
   private toPersistAbleState() {
+    const normalizeTableState = this.translator.normalize.bind(this.translator);
     return {
       name: this.name,
-      tableState: {
-        aggregatorName: this.localizedAggregatorNameToKey(this.tableState.aggregatorName as string),
-        colOrder: toJS(this.tableState.colOrder),
-        cols: toJS(this.tableState.cols),
-        rendererName: this.tableState.rendererName,
-        rowOrder: toJS(this.tableState.rowOrder),
-        rows: toJS(this.tableState.rows),
-        vals: toJS(this.tableState.vals),
-      }
+      tableState: normalizeTableState(this.tableState)
     }
   }
 

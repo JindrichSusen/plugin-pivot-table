@@ -2,9 +2,10 @@ import { ILocalizer } from "@origam/plugin-interfaces";
 import { aggregators } from "react-pivottable/Utilities";
 import { localizations } from "./PivotTablePluginLocalization";
 import { ITableState } from "./interfaces";
+import { toJS } from "mobx";
 
 
-export class AggregatorTranslator {
+export class PivotTableTranslator {
   locale: string;
   private T: (key: string, parameters?: { [p: string]: any }) => string;
   translatedAggregators: {[key: string]: string};
@@ -23,7 +24,7 @@ export class AggregatorTranslator {
     return translatedAggregators;
   }
 
-  translateAggregatorNames(state: ITableState) {
+  localize(state: ITableState) {
     console.log(state)
     const localization = this.getCurrentLocalization();
     console.log("aggregatorName before translation: " + state["aggregatorName"])
@@ -34,6 +35,18 @@ export class AggregatorTranslator {
     }
     console.log("aggregatorName: " + state["aggregatorName"])
     return state;
+  }
+
+  normalize(state: ITableState){
+    return {
+      aggregatorName: this.localizedAggregatorNameToKey(state.aggregatorName as string),
+      colOrder: toJS(state.colOrder),
+      cols: toJS(state.cols),
+      rendererName: state.rendererName,
+      rowOrder: toJS(state.rowOrder),
+      rows: toJS(state.rows),
+      vals: toJS(state.vals),
+    };
   }
 
   private getCurrentLocalization() {
