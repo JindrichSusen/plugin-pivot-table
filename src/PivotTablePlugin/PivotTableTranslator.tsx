@@ -60,9 +60,9 @@ export class PivotTableTranslator {
 
   private localizeAggregatorName(state: ITableState) {
     const localization = this.getCurrentLocalization();
-    console.log("aggregatorName before translation: " + state["aggregatorName"])
-    if (state["aggregatorName"] && localization["aggregatorName"]) {
-      state["aggregatorName"] = this.T(state["aggregatorName"] as string);
+    const originalName = state["aggregatorName"] as string;
+    if (originalName && localization.translations[originalName]) {
+      state["aggregatorName"] = this.T(originalName);
     } else {
       state["aggregatorName"] = this.T("Count");
     }
