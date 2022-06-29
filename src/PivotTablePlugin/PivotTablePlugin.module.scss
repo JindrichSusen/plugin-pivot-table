@@ -79,10 +79,6 @@ td > div > div:global(.pvtDropdownCurrent){
 // printing
 
 @media print {
-  .noPrint {
-    display: none;
-  }
-
   div > table:global(.pvtTable) {
     margin-left: 0;
   }

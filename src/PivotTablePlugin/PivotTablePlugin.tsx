@@ -58,11 +58,7 @@ export class PivotTablePlugin implements ISectionPlugin {
   @observable
   tableState = [];
 
-  @observable
-  label = "";
-
   initialize(xmlAttributes: { [key: string]: string }): void {
-    this.label = xmlAttributes["Label"]
   }
 
   @action
@@ -95,7 +91,6 @@ export class PivotTablePlugin implements ISectionPlugin {
       data={tableData}
       pluginData={data}
       localizer={localizer}
-      label={this.label}
     />
   }
 
@@ -107,7 +102,6 @@ export class PivotTableComponent extends React.Component<{
   data: string[][],
   pluginData: IPluginData,
   localizer: ILocalizer,
-  label: string
 }> {
   T =  this.props.localizer.translate.bind(this.props.localizer);
   readonly tableViewNameTemplate = this.props.localizer.translate("newTableViewTemplate");
@@ -330,7 +324,7 @@ export class PivotTableComponent extends React.Component<{
         />
       </div>
       <div ref={this.printComponentRef}>
-        <h1 className={S.printOnly}>{this.props.label}</h1>
+        <h1 className={S.printOnly}>{this.currentView.name}</h1>
         <PivotTable
           aggregators={this.translator.translatedAggregators}
           data={this.props.data}
