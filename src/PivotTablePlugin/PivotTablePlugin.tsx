@@ -223,7 +223,7 @@ export class PivotTableComponent extends React.Component<{
 
   @action
   onTableChange(tableState: any) {
-    this.currentView.tableState = tableState;
+    this.currentView.currentLocalizedTableState = tableState;
   }
 
   @action
@@ -237,7 +237,7 @@ export class PivotTableComponent extends React.Component<{
     // debugger;
     // this.aggregatorTranslator
     // this.views.map(view => this.aggregatorTranslator.view.persistedState.tableState)
-    let json = JSON.stringify(this.views.map(view => view.persistedState));
+    let json = JSON.stringify(this.views.map(view => view.persistedNormalizedState));
     await this.dataView.saveConfiguration("PivotTablePlugin", json);
   }
 
@@ -297,7 +297,7 @@ export class PivotTableComponent extends React.Component<{
         aggregators={this.translator.translatedAggregators}
         aggregatorName={Object.keys(this.translator.translatedAggregators)[0]}
         renderers={Object.assign({}, CustomTableRenderers, PlotlyRenderers)}
-        {...this.currentView.tableState}
+        {...this.currentView.currentLocalizedTableState}
       />
     </div>
   }
@@ -329,7 +329,7 @@ export class PivotTableComponent extends React.Component<{
           aggregators={this.translator.translatedAggregators}
           data={this.props.data}
           renderers={Object.assign({}, CustomTableRenderers, PlotlyRenderers)}
-          {...this.currentView.tableState}
+          {...this.currentView.currentLocalizedTableState}
         />
       </div>
     </div>
@@ -347,7 +347,12 @@ export class PivotTableComponent extends React.Component<{
 class TableView implements IListViewItem {
   @observable
   name = ""
-  persistedState: IPersistAbleState;
+
+  @observable
+  currentLocalizedTableState: ITableState = {};
+
+  persistedNormalizedState: IPersistAbleState;
+
   private translator: PivotTableTranslator;
 
   constructor(
@@ -358,28 +363,26 @@ class TableView implements IListViewItem {
    ) {
     const localize = aggregatorTranslator.localize.bind(aggregatorTranslator);
     this.name = name;
-    this.tableState = localize(state);
+    this.currentLocalizedTableState = localize(state);
     this.translator = aggregatorTranslator;
-    this.persistedState = this.toPersistAbleState();
+    this.persistedNormalizedState = this.normalize(this.currentLocalizedTableState);
   }
 
-  private toPersistAbleState() {
+  private normalize(tableState: ITableState) {
     const normalizeTableState = this.translator.normalize.bind(this.translator);
     return {
       name: this.name,
-      tableState: normalizeTableState(this.tableState)
+      tableState: normalizeTableState(tableState)
     }
   }
 
   updatePersistedState() {
-    this.persistedState = this.toPersistAbleState();
+    this.persistedNormalizedState = this.normalize(this.currentLocalizedTableState);
   }
 
-  @observable
-  tableState: ITableState = {};
-
   restoreToSavedState() {
-    this.tableState = this.persistedState.tableState;
-    this.name = this.persistedState.name;
+    const localize =  this.translator.localize.bind(this.translator);
+    this.currentLocalizedTableState = localize(this.persistedNormalizedState.tableState);
+    this.name = this.persistedNormalizedState.name;
   }
 }
