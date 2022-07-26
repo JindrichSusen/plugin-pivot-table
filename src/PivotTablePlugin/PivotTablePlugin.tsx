@@ -360,12 +360,8 @@ class TableView implements IListViewItem {
     this.name = name;
     this.tableState = localize(state);
     this.translator = aggregatorTranslator;
-    this.persistedState = {
-      name: this.name,
-      tableState: this.tableState
-    };
+    this.persistedState = this.toPersistAbleState();
   }
-
 
   private toPersistAbleState() {
     const normalizeTableState = this.translator.normalize.bind(this.translator);

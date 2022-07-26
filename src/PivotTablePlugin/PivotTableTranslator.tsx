@@ -72,7 +72,6 @@ export class PivotTableTranslator {
   normalize(state: ITableState) {
     const cols = (state.cols as string[]).map(propertyName => this.propertyNameToId(propertyName));
     const rows = (state.rows as string[]).map(propertyName => this.propertyNameToId(propertyName));
-
     return {
       aggregatorName: this.localizedAggregatorNameToKey(state.aggregatorName as string),
       colOrder: toJS(state.colOrder),
