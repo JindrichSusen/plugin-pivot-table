@@ -1,4 +1,4 @@
-import { ILocalizer, IPluginProperty } from "@origam/plugin-interfaces";
+import { ILocalizer, IPluginProperty } from "@origam/plugins";
 import { aggregators } from "react-pivottable/Utilities";
 import { localizations } from "./PivotTablePluginLocalization";
 import { ITableState } from "./interfaces";

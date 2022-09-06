@@ -6,7 +6,7 @@ import SD from "@origam/components/src/components/Dropdown/Dropdown.module.scss"
 import cx from "classnames";
 import { observable } from "mobx";
 import { EditButton } from "./EditButton";
-import { ILocalizer } from "@origam/plugin-interfaces";
+import { ILocalizer } from "@origam/plugins";
 
 @observer
 export class SimpleListView<T extends IListViewItem> extends React.PureComponent<{

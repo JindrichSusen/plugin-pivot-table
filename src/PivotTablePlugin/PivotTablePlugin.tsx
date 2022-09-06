@@ -26,12 +26,12 @@ import 'react-pivottable/pivottable.css';
 import {
   ILocalization,
   ILocalizer,
-  IPluginData,
+  ISectionPluginData,
   IPluginDataView,
   IPluginProperty,
   IPluginTableRow,
-  ISectionPlugin
-} from "@origam/plugin-interfaces";
+  AbstractSectionPlugin
+} from "@origam/plugins";
 import { observer } from "mobx-react";
 import "./PivotTablePlugin.module.scss";
 import S from "./PivotTablePlugin.module.scss";
@@ -50,16 +50,9 @@ import { IPersistAbleState, ITableState } from "./interfaces";
 
 const PlotlyRenderers = createPlotlyRenderers(Plot);
 
-
-export class PivotTablePlugin implements ISectionPlugin {
-  $type_ISectionPlugin: 1 = 1;
-  id: string = ""
-
+export class PivotTablePlugin extends AbstractSectionPlugin {
   @observable
   tableState = [];
-
-  initialize(xmlAttributes: { [key: string]: string }): void {
-  }
 
   @action
   onTableChange(tableState: any) {
@@ -70,7 +63,7 @@ export class PivotTablePlugin implements ISectionPlugin {
     return dataView.properties.map(prop => dataView.getCellText(row, prop.id));
   }
 
-  getComponent(data: IPluginData, createLocalizer: (localizations: ILocalization[]) => ILocalizer): JSX.Element {
+  getComponent(data: ISectionPluginData, createLocalizer: (localizations: ILocalization[]) => ILocalizer): JSX.Element {
     let dataView = data.dataView;
     let localizer = createLocalizer(localizations);
     const tableData = [dataView.properties.map(prop => prop.name)];
@@ -93,14 +86,12 @@ export class PivotTablePlugin implements ISectionPlugin {
       localizer={localizer}
     />
   }
-
-  getScreenParameters: (() => { [parameter: string]: string }) | undefined;
 }
 
 @observer
 export class PivotTableComponent extends React.Component<{
   data: string[][],
-  pluginData: IPluginData,
+  pluginData: ISectionPluginData,
   localizer: ILocalizer,
 }> {
   T =  this.props.localizer.translate.bind(this.props.localizer);
