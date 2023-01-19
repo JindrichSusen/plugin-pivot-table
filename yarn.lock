@@ -59,12 +59,12 @@
   resolved "https://registry.yarnpkg.com/@mapbox/whoots-js/-/whoots-js-3.1.0.tgz#497c67a1cef50d1a2459ba60f315e448d2ad87fe"
   integrity sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==
 
-"@origam/components@^1.3.3":
-  version "1.5.4"
-  resolved "https://registry.yarnpkg.com/@origam/components/-/components-1.5.4.tgz#33e528a4452c8f8f735d00be6163368c2ab7b725"
-  integrity sha512-wZOtLHQub9bW5D1GpEesP0jUOgqFTr9mem6pDyfK10jnxW4xJgWo5hDni9rSHEVQ0NsuI02EJP36iQjhL1dh2g==
+"@origam/components@^1.6.2":
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/@origam/components/-/components-1.6.2.tgz#9fce4349cb3aaf02692c6b730dec999dd9421065"
+  integrity sha512-E5kJL0hO3RaldC5YS3Ft1Kl5gvqzmtSe8XS+ZfVbZBC2g33XJztMfZOPaehepXi/vegOvyK09fIKc9/VSuIK3Q==
   dependencies:
-    react-inlinesvg "^2.3.0"
+    react-inlinesvg "^3.0.1"
 
 "@origam/plugins@^1.1.0":
   version "1.1.0"
@@ -3431,18 +3431,18 @@ react-draggable@^3.0.3:
     classnames "^2.2.5"
     prop-types "^15.6.0"
 
-react-from-dom@^0.6.0:
+react-from-dom@^0.6.2:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/react-from-dom/-/react-from-dom-0.6.2.tgz#9da903a508c91c013b55afcd59348b8b0a39bdb4"
   integrity sha512-qvWWTL/4xw4k/Dywd41RBpLQUSq97csuv15qrxN+izNeLYlD9wn5W8LspbfYe5CWbaSdkZ72BsaYBPQf2x4VbQ==
 
-react-inlinesvg@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/react-inlinesvg/-/react-inlinesvg-2.3.0.tgz#62283c0ce7e9d11d8190ec3e89589102288830fd"
-  integrity sha512-fEGOdDf4k4bcveArbEpj01pJcH8pOCKLxmSj2POFdGvEk5YK0NZVnH6BXpW/PzACHPRsuh1YKAhNZyFnD28oxg==
+react-inlinesvg@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/react-inlinesvg/-/react-inlinesvg-3.0.1.tgz#2133f5d2c770ac405060db2ce1c13eed30e7e83b"
+  integrity sha512-cBfoyfseNI2PkDA7ZKIlDoHq0eMfpoC3DhKBQNC+/X1M4ZQB+aXW+YiNPUDDDKXUsGDUIZWWiZWNFeauDIVdoA==
   dependencies:
     exenv "^1.2.2"
-    react-from-dom "^0.6.0"
+    react-from-dom "^0.6.2"
 
 react-is@^16.13.1:
   version "16.13.1"
