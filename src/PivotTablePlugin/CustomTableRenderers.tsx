@@ -103,8 +103,10 @@ export class TableRenderer extends React.PureComponent<{
           const rowValues = colKeys.map((x: any) =>
             pivotData.getAggregator(r, x).value()
           );
+          // @ts-ignore
           rowColorScales[r] = colorScaleGenerator(rowValues);
         });
+        // @ts-ignore
         valueCellColors = (r: any, c: any, v: any)  => rowColorScales[r](v);
       } else if (this.opts.heatmapMode === 'col') {
         const colColorScales = {};
@@ -112,8 +114,10 @@ export class TableRenderer extends React.PureComponent<{
           const colValues = rowKeys.map((x: any) =>
             pivotData.getAggregator(x, c).value()
           );
+          // @ts-ignore
           colColorScales[c] = colorScaleGenerator(colValues);
         });
+        // @ts-ignore
         valueCellColors = (r: any, c: any, v: any)  => colColorScales[c](v);
       }
     }
@@ -125,12 +129,14 @@ export class TableRenderer extends React.PureComponent<{
           for (const i of Object.keys(colAttrs || {})) {
             const attr = colAttrs[i];
             if (colValues[i] !== null) {
+              // @ts-ignore
               filters[attr] = colValues[i];
             }
           }
           for (const i of Object.keys(rowAttrs || {})) {
             const attr = rowAttrs[i];
             if (rowValues[i] !== null) {
+              // @ts-ignore
               filters[attr] = rowValues[i];
             }
           }
