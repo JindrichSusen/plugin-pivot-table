@@ -22,6 +22,7 @@ export class PivotTableTranslator {
   translateAggregators() {
     const translatedAggregators = {};
     for (let aggregatorName of Object.keys(aggregators)) {
+      // @ts-ignore
       translatedAggregators[this.T(aggregatorName)] = aggregators[aggregatorName];
     }
     return translatedAggregators;
@@ -61,6 +62,7 @@ export class PivotTableTranslator {
   private localizeAggregatorName(state: ITableState) {
     const localization = this.getCurrentLocalization();
     const originalName = state["aggregatorName"] as string;
+    // @ts-ignore
     if (originalName && localization.translations[originalName]) {
       state["aggregatorName"] = this.T(originalName);
     } else {
@@ -96,6 +98,7 @@ export class PivotTableTranslator {
       return localizedName;
     }
     const localization = this.getCurrentLocalization();
+    // @ts-ignore
     const key = Object.keys(localization.translations).find(key => localization.translations[key] === localizedName);
     if (!key) {
       throw new Error(`Could not find localization key for aggregator named "${localizedName}"`)
