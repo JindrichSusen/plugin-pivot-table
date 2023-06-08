@@ -17,7 +17,7 @@
     "mobx-react": "6",
     "moment": "^2.29.1",
     "react-pivottable": "^0.11.0",
-    "react-to-print": "^2.14.12",
+    "react-to-print": "^2.14.13",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
