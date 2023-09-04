@@ -28,7 +28,7 @@
     "babel-runtime": "^6.26.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "node-sass": "8",
+    "node-sass": "9",
     "postcss": "^8.4.24",
     "rollup": "^3.28.1",
     "rollup-plugin-postcss": "^4.0.1",
