@@ -65,12 +65,12 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
-"@origam/components@^1.6.2":
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/@origam/components/-/components-1.6.2.tgz#9fce4349cb3aaf02692c6b730dec999dd9421065"
-  integrity sha512-E5kJL0hO3RaldC5YS3Ft1Kl5gvqzmtSe8XS+ZfVbZBC2g33XJztMfZOPaehepXi/vegOvyK09fIKc9/VSuIK3Q==
+"@origam/components@^1.6.3":
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/@origam/components/-/components-1.6.3.tgz#1d01d9c0d7c0a02af72d361be59bad401ffa7520"
+  integrity sha512-7jWHD0u2yaSTS8DG2FkIosMcnRbntctN6XMeH6s+R4VCnHO2nJU+0wjuZUgN1pOaH4wgIEkcEFO3SyNEbnPaxA==
   dependencies:
-    react-inlinesvg "^3.0.1"
+    react-inlinesvg "^4.0.3"
 
 "@origam/plugins@^1.1.0":
   version "1.1.0"
@@ -918,11 +918,6 @@ eventemitter3@^4.0.4:
   version "4.0.7"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
   integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
-
-exenv@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/exenv/-/exenv-1.2.2.tgz#2ae78e85d9894158670b03d47bec1f03bd91bb9d"
-  integrity sha512-Z+ktTxTwv9ILfgKCk32OX3n/doe+OcLTRtqK9pcL+JsP3J1/VW8Uvl4ZjLlKqeW4rzK4oesDOGMEMRIZqtP4Iw==
 
 fill-range@^7.0.1:
   version "7.0.1"
@@ -2260,12 +2255,11 @@ react-from-dom@^0.6.2:
   resolved "https://registry.yarnpkg.com/react-from-dom/-/react-from-dom-0.6.2.tgz#9da903a508c91c013b55afcd59348b8b0a39bdb4"
   integrity sha512-qvWWTL/4xw4k/Dywd41RBpLQUSq97csuv15qrxN+izNeLYlD9wn5W8LspbfYe5CWbaSdkZ72BsaYBPQf2x4VbQ==
 
-react-inlinesvg@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/react-inlinesvg/-/react-inlinesvg-3.0.1.tgz#2133f5d2c770ac405060db2ce1c13eed30e7e83b"
-  integrity sha512-cBfoyfseNI2PkDA7ZKIlDoHq0eMfpoC3DhKBQNC+/X1M4ZQB+aXW+YiNPUDDDKXUsGDUIZWWiZWNFeauDIVdoA==
+react-inlinesvg@^4.0.3:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/react-inlinesvg/-/react-inlinesvg-4.0.4.tgz#100e377ed13f71f24e08055882a4b8981038e638"
+  integrity sha512-OnXi+IHoY2zj6rt+kLmXQth9HZ3rS1TDtDwjFbELcCZngAJC32nXp2ZzLp4FpijzISDe7YfHI3SFs9qALWv+xw==
   dependencies:
-    exenv "^1.2.2"
     react-from-dom "^0.6.2"
 
 react-is@^16.13.1:
