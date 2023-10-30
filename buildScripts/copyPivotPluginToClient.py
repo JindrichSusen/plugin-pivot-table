@@ -24,24 +24,18 @@ def replace_file(path, content):
 
 def cmd(work_dir, cmd):
     print(f"\"{cmd}\" executed in \"{work_dir}\"")
-    output = subprocess.check_output(
-        cmd,
-        cwd=work_dir,
-        shell=True).decode("utf-8")
-    if output != "":
-        print(output)
-
-
-def run_and_wait_for_key(function_to_run):
     try:
-        function_to_run()
-    except:
-        print("----- ERROR -----")
-        traceback.print_exc(file=sys.stdout)
-        print()
-    finally:
-        print("Done!")
-        input("Any key to exit...")
+        output = subprocess.check_output(
+            cmd,
+            cwd=work_dir,
+            stderr=subprocess.STDOUT,
+            shell=True).decode("utf-8")
+        if output != "":
+            print(output)
+    except subprocess.CalledProcessError as e:
+        print("")
+        print("E R R O R !")
+        print(e.output.decode("utf-8"))
 
 
 def move_to_trash(path):
@@ -54,12 +48,7 @@ def move_to_trash(path):
         raise Exception(f"Cannot move ${ex.filename} to trash. Is Webstorm or something else running there?", ex)
 
 
-def pivot_table_merged():
-    # Change this!
-    path_to_plugin_repo = Path(r"C:\Repos\origam-plugin-pivot-table")
-    # Change this!
-    repo_path = Path(r"C:\Repos\origam")
-
+def pivot_table_merged(path_to_plugin_repo, repo_path):
     with open(path_to_plugin_repo / "PluginRegistration.ts") as f:
         plugin_registration_content = f.read()
 
@@ -80,5 +69,20 @@ def pivot_table_merged():
 
 
 if __name__ == "__main__":
-    run_and_wait_for_key(pivot_table_merged)
+    if len(sys.argv) != 3:
+        print("Please provide exactly two input parameters: 1.  path_to_plugin_repo, 2. origam_repo_path\n"
+              "Example: python copyPivotPluginToClient.py C:\Repos\origam-plugin-pivot-table C:\Repos\origam")
+        sys.exit()
+
+    try:
+        path_to_plugin_repo = Path(sys.argv[1])
+        repo_path = Path(sys.argv[2])
+        pivot_table_merged(path_to_plugin_repo, repo_path)
+    except:
+        print("----- ERROR -----")
+        traceback.print_exc(file=sys.stdout)
+        print()
+    finally:
+        print("DONE!")
+        input("Any key to exit...")
     print("DONE!")
