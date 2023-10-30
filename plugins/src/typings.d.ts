@@ -18,11 +18,6 @@ along with ORIGAM. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-declare module '*.module.scss' {
-  const classes: { [key: string]: string };
-  export default classes;
-}
-
 declare module 'react-pivottable/PivotTableUI'{
   export default class PivotTableUI extends React.Component<{
     data: any,

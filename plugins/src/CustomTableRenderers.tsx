@@ -1,8 +1,7 @@
 import React from 'react';
 import { PivotData } from "react-pivottable/Utilities";
 
-
-let translate = (key: string,parameters?: {
+let translate = (key: string, parameters?: {
   [key: string]: any}) => key;
 
 export function setTranslationFunction(newTranslateFunc: any){
@@ -149,7 +148,6 @@ export class TableRenderer extends React.PureComponent<{
             );
         }
         : null;
-
     return (
       <table className="pvtTable">
         <thead>
@@ -279,7 +277,6 @@ export class TableRenderer extends React.PureComponent<{
           </th>
 
           {colKeys.map(function(colKey: any, i: any) {
-            debugger;
             const totalAggregator = pivotData.getAggregator([], colKey) as any;
             return (
               <td
