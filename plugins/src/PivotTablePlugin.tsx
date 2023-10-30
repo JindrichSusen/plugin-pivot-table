@@ -294,6 +294,7 @@ export class PivotTableComponent extends React.Component<{
   }
 
   renderDisplayMode() {
+    debugger;
     return <div className={S.editModeRoot}>
       <div className={cx(S.listViewContainer, S.noPrint)}>
         <ReactToPrint
