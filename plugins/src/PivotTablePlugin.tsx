@@ -1,44 +1,14 @@
-/*
-Copyright 2005 - 2021 Advantage Solutions, s. r. o.
-
-This file is part of ORIGAM (http://www.origam.org).
-
-ORIGAM is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-ORIGAM is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with ORIGAM. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
 import { action, observable } from "mobx";
 import React from "react";
 import PivotTableUI from 'react-pivottable/PivotTableUI';
 import PivotTable from 'react-pivottable/PivotTable';
 import 'react-pivottable/pivottable.css';
-import {
-  ILocalization,
-  ILocalizer,
-  ISectionPluginData,
-  IPluginDataView,
-  IPluginProperty,
-  IPluginTableRow,
-  AbstractSectionPlugin
-} from "@origam/plugins";
 import { observer } from "mobx-react";
 import "./PivotTablePlugin.module.scss";
 import S from "./PivotTablePlugin.module.scss";
 import CustomTableRenderers, { setTranslationFunction } from './CustomTableRenderers'
 import Plot from 'react-plotly.js';
 import createPlotlyRenderers from 'react-pivottable/PlotlyRenderers';
-import { Button } from "@origam/components";
 import { IListViewItem, SimpleListView } from "./SimpleListView";
 import { v4 as uuidv4 } from 'uuid';
 import { SimpleInput } from "./SimpleInput";
@@ -47,10 +17,37 @@ import { localizations } from "./PivotTablePluginLocalization";
 import ReactToPrint from "react-to-print";
 import { PivotTableTranslator } from "./PivotTableTranslator";
 import { IPersistAbleState, ITableState } from "./interfaces";
+import { IPluginDataView } from "plugins/interfaces/IPluginDataView";
+import { IPluginTableRow } from "plugins/interfaces/IPluginTableRow";
+import { IPluginProperty } from "plugins/interfaces/IPluginProperty";
+import { ISectionPluginData } from "plugins/interfaces/ISectionPluginData";
+import { ILocalization } from "plugins/interfaces/ILocalization";
+import { ILocalizer } from "plugins/interfaces/ILocalizer";
+import { Button } from "gui/Components/Button/Button";
+import { ISectionPlugin } from "plugins/interfaces/ISectionPlugin";
+import { EventHandler } from "utils/EventHandler";
 
 const PlotlyRenderers = createPlotlyRenderers(Plot);
 
-export class PivotTablePlugin extends AbstractSectionPlugin {
+export class PivotTablePlugin implements ISectionPlugin {
+  $type_ISectionPlugin: 1 = 1; // required by the isISectionPlugin function
+  id: string = ""
+
+  onSessionRefreshed() {
+    this.refreshHandler.call();
+  }
+
+  initialize(xmlAttributes: { [key: string]: string }): void {
+    this.initialized = true;
+  }
+
+  getScreenParameters: (() => { [p: string]: string }) | undefined;
+
+  @observable
+  initialized = false;
+
+  refreshHandler = new EventHandler();
+
   @observable
   tableState = [];
 

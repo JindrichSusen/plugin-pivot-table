@@ -1,4 +1,4 @@
-import { PivotTablePlugin } from "plugins/implementations/plugins/src/PivotTablePlugin";
+import { PivotTablePlugin } from "plugins/implementations/PivotTablePlugin/src/PivotTablePlugin";
 import { registerPlugin } from "plugins/tools/PluginLibrary";
 
 

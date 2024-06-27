@@ -1,8 +1,9 @@
-import { ILocalizer, IPluginProperty } from "@origam/plugins";
 import { aggregators } from "react-pivottable/Utilities";
 import { localizations } from "./PivotTablePluginLocalization";
 import { ITableState } from "./interfaces";
 import { toJS } from "mobx";
+import { IPluginProperty } from "plugins/interfaces/IPluginProperty";
+import { ILocalizer } from "plugins/interfaces/ILocalizer";
 
 
 export class PivotTableTranslator {

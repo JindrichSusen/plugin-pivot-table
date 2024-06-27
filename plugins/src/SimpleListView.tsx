@@ -2,11 +2,11 @@ import { observer } from "mobx-react";
 import React from "react";
 import S from "./SimpleListView.module.scss";
 import "./SimpleListView.module.scss";
-import SD from "@origam/components/src/components/Dropdown/Dropdown.module.scss"
+import SD from "gui/Components/Dropdown/Dropdown.module.scss"
 import cx from "classnames";
 import { observable } from "mobx";
 import { EditButton } from "./EditButton";
-import { ILocalizer } from "@origam/plugins";
+import { ILocalizer } from "plugins/interfaces/ILocalizer";
 
 @observer
 export class SimpleListView<T extends IListViewItem> extends React.PureComponent<{
@@ -18,7 +18,7 @@ export class SimpleListView<T extends IListViewItem> extends React.PureComponent
   localizer: ILocalizer
 }> {
 
-  T = (key: string, parameters?: { [key: string]: any; }) => this.props.localizer.translate(key, parameters);
+  translate = (key: string, parameters?: { [key: string]: any; }) => this.props.localizer.translate(key, parameters);
 
   @observable
   itemWithCursorId: string | undefined;
@@ -49,7 +49,7 @@ export class SimpleListView<T extends IListViewItem> extends React.PureComponent
                   isEnabled={this.itemWithCursorId === item.id}
                   isVisible={this.itemWithCursorId === item.id}
                   onClick={() => this.props.onEditItemClicked(item)}
-                  tooltip={this.T("edit")}
+                  tooltip={this.translate("edit")}
                 />
               </div>
             </div>
@@ -59,7 +59,7 @@ export class SimpleListView<T extends IListViewItem> extends React.PureComponent
           onClick={() => this.props.onNewItemClicked()}
           className={S.newItemButton}
         >
-          {this.T("createNewView")}
+          {this.translate("createNewView")}
         </div>
       </div>
     );

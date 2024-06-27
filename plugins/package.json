@@ -1,4 +1,11 @@
 {
   "name": "@origam/plugin-pivot-table",
-  "version": "2.0.5"
+  "version": "2.0.5",
+  "dependencies": {
+    "react-pivottable": "^0.11.0",
+    "react-plotly.js": "^2.6.0",
+    "plotly.js": "^2.21.0",
+    "react-to-print": "^2.14.13",
+    "chart.js": "^4.2.1"
+  }
 }
